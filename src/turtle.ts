@@ -16,18 +16,29 @@ function centerCoordinates(ctx: CanvasRenderingContext2D) {
   ctx.transform(1, 0, 0, -1, 0, 0);
 }
 
+/**
+ * A Turtle to draw on a canvas.
+ */
 export class Turtle {
   /**
    * The turtle's Canvas 2D context.
    */
   readonly ctx: CanvasRenderingContext2D;
 
-  private redraw: boolean = true;
-
+  /**
+   * Wether or not the turtle is hidden.
+   */
   private hidden: boolean = false;
 
+  /**
+   * Wether or not to wrap the turtle around the canvas.
+   * The turtle goes around when overflowing.
+   */
   private wrap: boolean = true;
 
+  /**
+   * Determines if the turtle draws on the canvas or not.
+   */
   private penDown: boolean = true;
 
   //private stepByStep: boolean = false;
@@ -40,37 +51,61 @@ export class Turtle {
 
   //private interval?: TimerHandler;
 
+  /**
+   * The Color object representing the current color of the turtle.
+   */
   private color: Color = new Color([255, 0, 255]);
 
+  /**
+   * The current width of the turtle's drawing.
+   */
   private width: number = 1;
 
+  /**
+   * The current X/Y position of the turtle on the canvas.
+   */
   private position: {
     x: number;
     y: number;
   } = { x: 0, y: 0 };
 
+  /**
+   * The current angle of the turtle.
+   */
   private angle: number = 0;
 
+  /**
+   * Wipes out the canvas.
+   * @returns {Turtle} For method chaining.
+   */
   clear(): Turtle {
     clearContext(this.ctx);
     this.draw();
     return this;
   }
 
+  /**
+   * Hide the turtle.
+   */
   hide(): Turtle {
     this.hidden = true;
     this.draw();
     return this;
   }
 
+  /**
+   * Show the turtle.
+   */
   show(): Turtle {
     this.hidden = false;
     this.draw();
     return this;
   }
 
+  /**
+   * Reset the turtle and the canvas.
+   */
   reset(): Turtle {
-    this.redraw = true;
     this.hidden = false;
     this.wrap = true;
     this.penDown = true;
@@ -84,48 +119,77 @@ export class Turtle {
     return this;
   }
 
+  /**
+   * Puts the pen up to stop drawing.
+   */
   putPenUp(): Turtle {
     this.penDown = false;
     return this;
   }
 
+  /**
+   * Puts the pen down to start drawing.
+   */
   putPenDown(): Turtle {
     this.penDown = true;
     return this;
   }
 
+  /**
+   * Inverts the position of the pen.
+   */
   invertPen(): Turtle {
     this.penDown = !this.penDown;
     return this;
   }
 
+  /**
+   * Sets a new color to be used for drawing.
+   * @param col Any value resolvable to a color.
+   */
   setColor(col: ColorResolvable): Turtle {
     this.color = convertToColor(col);
     return this;
   }
+
+  /**
+   * Sets a new width to be used for drawing lines.
+   */
   setWidth(size: number): Turtle {
     this.width = size;
     return this;
   }
 
+  /**
+   * Set the turtle to this angle.
+   */
   setAngle(ang: number): Turtle {
     this.angle = ang;
     this.draw();
     return this;
   }
 
+  /**
+   * Rotate the turtle on the left.
+   */
   left(ang: number): Turtle {
     this.angle -= ang;
     this.draw();
     return this;
   }
 
+  /**
+   * Rotate the turtle on the right.
+   */
   right(ang: number): Turtle {
     this.angle += ang;
     this.draw();
     return this;
   }
 
+  /**
+   * Sends the turtle at a new position.
+   */
   goto(x: number, y: number): Turtle {
     this.position.x = x;
     this.position.y = y;
@@ -133,9 +197,10 @@ export class Turtle {
     return this;
   }
 
+  /**
+   * Draws the turtle (The arrow).
+   */
   draw(): Turtle {
-    if (!this.redraw) return this;
-    //clearContext(this.ctx);
     if (!this.hidden) {
       // const x = this.position.x;
       // const y = this.position.y;
@@ -160,6 +225,9 @@ export class Turtle {
     return this;
   }
 
+  /**
+   * Makes the turtle walk forward and draw a line.
+   */
   forward(distance: number): Turtle {
     this.ctx.save();
     centerCoordinates(this.ctx);
@@ -181,20 +249,13 @@ export class Turtle {
     while (distance > 0) {
       const distanceToEdgeX = Math.abs((newX > x ? w - x : w + x) / sinAngle);
       const distanceToEdgeY = Math.abs((newY > y ? h - y : h + y) / cosAngle);
-      console.log(`
-      distance: ${distance},
-      newX: ${newX},  x: ${x}
-      newY: ${newY},  y: ${y}
-      cosAngle: ${cosAngle}, sinAngle: ${sinAngle}
-      `);
-      this.ctx.moveTo(x, y);
 
+      this.ctx.moveTo(x, y);
       if (
         this.wrap &&
         Math.abs(newX) > w &&
         distanceToEdgeX <= distanceToEdgeY
       ) {
-        console.log('xwrap');
         x = newX > 0 ? -w : w;
         y += cosAngle * distanceToEdgeX;
         this.ctx.lineTo(newX, newY);
@@ -205,7 +266,6 @@ export class Turtle {
         Math.abs(newY) > h &&
         distanceToEdgeX >= distanceToEdgeY
       ) {
-        console.log('y wrap');
         y = newY > 0 ? -h : h;
         x += sinAngle * distanceToEdgeY;
         this.ctx.lineTo(newX, newY);
