@@ -63,6 +63,16 @@ export class Color {
     return `rgb(${this.r}, ${this.g}, ${this.b})`;
   }
 
+  /**
+   * Convert the color to a `rgba(...)` css string.
+   *
+   * @example `rgba(250, 30, 124, 0.5)`
+   *
+   */
+  toRGBA(): string {
+    return `rgba(${this.r}, ${this.g}, ${this.b}, 1)`;
+  }
+
   constructor(rgb: [Number, Number, Number]) {
     this.rgb = rgb;
   }
@@ -78,10 +88,10 @@ export function convertToColor(col: ColorResolvable): Color {
     rgb[1] ??= col[1];
     rgb[2] ??= col[2];
   } else {
-    if (col.charAt(0) == '#') col = col.slice(1, 6);
     col.replace(/ /g, '');
     col.toLowerCase();
     if (hex(col)) col = hex(col) as string;
+    if (col[0] == '#') col = col.slice(1, 7);
 
     if (col.length >= 6) {
       rgb[0] = parseInt(col.slice(0, 2), 16);

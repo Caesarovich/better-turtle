@@ -24,11 +24,10 @@ function centerCoordinates(ctx: CanvasRenderingContext2D) {
 }
 
 export class Turtle {
-  canvas: HTMLCanvasElement;
   /**
    * The turtle's Canvas 2D context.
    */
-  ctx: CanvasRenderingContext2D;
+  readonly ctx: CanvasRenderingContext2D;
 
   redraw: boolean = true;
 
@@ -129,13 +128,10 @@ export class Turtle {
     this.wrap = true;
     this.penDown = true;
     this.stepByStep = false;
-    this.width = 1;
-    this.color = new Color([255, 0, 255]);
-    this.angle = 0;
-    this.position = {
-      x: 0,
-      y: 0,
-    };
+    this.setWidth(1);
+    this.setColor([0, 0, 0]);
+    this.setAngle(0);
+    this.goto(0, 0);
     this.clear();
     this.draw();
   }
@@ -154,9 +150,11 @@ export class Turtle {
 
   setColor(col: ColorResolvable): void {
     this.color = convertToColor(col);
+    this.ctx.strokeStyle = this.color.toRGBA();
   }
   setWidth(size: number): void {
     this.width = size;
+    this.ctx.lineWidth = size;
   }
 
   setAngle(ang: number): void {
@@ -206,12 +204,8 @@ export class Turtle {
     //turtleContext.drawImage(imageCanvas, 0, 0, 700, 700, 0, 0, 700, 700);
   }
 
-  constructor(canvas: HTMLCanvasElement) {
-    this.canvas = canvas;
-    const ctx = canvas.getContext('2d');
-
-    if (ctx) {
-      this.ctx = ctx;
-    } else throw new Error('Could not get 2D context on HTMLCanvasElement');
+  constructor(context: CanvasRenderingContext2D) {
+    this.ctx = context;
+    this.reset();
   }
 }
