@@ -7,13 +7,6 @@ function clearContext(context: CanvasRenderingContext2D) {
   context.restore();
 }
 
-function insideCanvas(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  const w = ctx.canvas.width / 2;
-  const h = ctx.canvas.height / 2;
-
-  return x >= -w && x <= w && y >= -h && y <= h;
-}
-
 function degToRad(deg: number) {
   return deg * (Math.PI / 180);
 }
@@ -29,84 +22,34 @@ export class Turtle {
    */
   readonly ctx: CanvasRenderingContext2D;
 
-  redraw: boolean = true;
+  private redraw: boolean = true;
 
-  hidden: boolean = false;
+  private hidden: boolean = false;
 
-  wrap: boolean = true;
+  private wrap: boolean = true;
 
-  penDown: boolean = true;
+  private penDown: boolean = true;
 
-  stepByStep: boolean = false;
+  //private stepByStep: boolean = false;
 
   //private step: boolean = false;
 
   //private steps: [string, string][] = [];
 
-  speed?: number;
+  //private speed?: number;
 
-  interval?: TimerHandler;
+  //private interval?: TimerHandler;
 
-  color: Color = new Color([255, 0, 255]);
+  private color: Color = new Color([255, 0, 255]);
 
-  width: number = 1;
+  private width: number = 1;
 
-  position: {
+  private position: {
     x: number;
     y: number;
   } = { x: 0, y: 0 };
 
-  angle: number = 0;
-
-  forward(distance: number): Turtle {
-    this.ctx.save();
-    centerCoordinates(this.ctx);
-    this.ctx.beginPath();
-    const cosAngle = Math.cos(degToRad(this.angle));
-    const sinAngle = Math.sin(degToRad(this.angle));
-    const w = this.ctx.canvas.width / 2;
-    const h = this.ctx.canvas.height / 2;
-
-    let x = this.position.x;
-    let y = this.position.y;
-    let newX = x + sinAngle * distance;
-    let newY = y + cosAngle * distance;
-
-    if (!this.wrap || !insideCanvas(this.ctx, newX, newY)) {
-      this.ctx.lineTo(newX, newY);
-    } else {
-      while (distance > 0) {
-        this.ctx.moveTo(x, y);
-
-        if (Math.abs(newX) > w) {
-          x -= x;
-          const distanceToEdge = Math.abs((w - x) / sinAngle);
-          y += cosAngle * distanceToEdge;
-          this.ctx.lineTo(newX, newY);
-          newX += newX < 0 ? w : -w;
-          distance -= distanceToEdge;
-        } else if (Math.abs(newY) > h) {
-          y -= y;
-          const distanceToEdge = Math.abs((h - y) / cosAngle);
-          x += sinAngle * distanceToEdge;
-          this.ctx.lineTo(newX, newY);
-          newY += newY < 0 ? h : -h;
-          distance -= distanceToEdge;
-        } else {
-          this.ctx.lineTo(newX, newY);
-          distance = 0;
-        }
-      }
-    }
-
-    this.position.x = newX;
-    this.position.y = newY;
-
-    if (this.penDown) this.ctx.stroke();
-    this.ctx.restore();
-    this.draw();
-    return this;
-  }
+  private angle: number = 0;
 
   clear(): Turtle {
     clearContext(this.ctx);
@@ -131,7 +74,7 @@ export class Turtle {
     this.hidden = false;
     this.wrap = true;
     this.penDown = true;
-    this.stepByStep = false;
+    //this.stepByStep = false;
     this.setWidth(1);
     this.setColor([0, 0, 0]);
     this.setAngle(0);
@@ -158,12 +101,10 @@ export class Turtle {
 
   setColor(col: ColorResolvable): Turtle {
     this.color = convertToColor(col);
-    this.ctx.strokeStyle = this.color.toRGBA();
     return this;
   }
   setWidth(size: number): Turtle {
     this.width = size;
-    this.ctx.lineWidth = size;
     return this;
   }
 
@@ -216,6 +157,71 @@ export class Turtle {
     }
     // Make a composite of the turtle canvas and the image canvas.
     //turtleContext.drawImage(imageCanvas, 0, 0, 700, 700, 0, 0, 700, 700);
+    return this;
+  }
+
+  forward(distance: number): Turtle {
+    this.ctx.save();
+    centerCoordinates(this.ctx);
+    this.ctx.lineWidth = this.width;
+    this.ctx.strokeStyle = this.color.toRGBA();
+    if (this.penDown) this.ctx.beginPath();
+    const cosAngle = Math.cos(degToRad(this.angle));
+    const sinAngle = Math.sin(degToRad(this.angle));
+    const w = this.ctx.canvas.width / 2;
+    const h = this.ctx.canvas.height / 2;
+
+    let x = this.position.x;
+    let y = this.position.y;
+    let newX = x + sinAngle * distance;
+    let newY = y + cosAngle * distance;
+
+    this.ctx.moveTo(x, y);
+
+    while (distance > 0) {
+      const distanceToEdgeX = Math.abs((newX > x ? w - x : w + x) / sinAngle);
+      const distanceToEdgeY = Math.abs((newY > y ? h - y : h + y) / cosAngle);
+      console.log(`
+      distance: ${distance},
+      newX: ${newX},  x: ${x}
+      newY: ${newY},  y: ${y}
+      cosAngle: ${cosAngle}, sinAngle: ${sinAngle}
+      `);
+      this.ctx.moveTo(x, y);
+
+      if (
+        this.wrap &&
+        Math.abs(newX) > w &&
+        distanceToEdgeX <= distanceToEdgeY
+      ) {
+        console.log('xwrap');
+        x = newX > 0 ? -w : w;
+        y += cosAngle * distanceToEdgeX;
+        this.ctx.lineTo(newX, newY);
+        newX -= newX > 0 ? w * 2 : -(w * 2);
+        distance -= distanceToEdgeX;
+      } else if (
+        this.wrap &&
+        Math.abs(newY) > h &&
+        distanceToEdgeX >= distanceToEdgeY
+      ) {
+        console.log('y wrap');
+        y = newY > 0 ? -h : h;
+        x += sinAngle * distanceToEdgeY;
+        this.ctx.lineTo(newX, newY);
+        newY -= newY > 0 ? h * 2 : -(h * 2);
+        distance -= distanceToEdgeY;
+      } else {
+        this.ctx.lineTo(newX, newY);
+        distance = 0;
+      }
+    }
+
+    this.goto(newX, newY);
+
+    if (this.penDown) this.ctx.stroke();
+    this.ctx.restore();
+    this.draw();
     return this;
   }
 
