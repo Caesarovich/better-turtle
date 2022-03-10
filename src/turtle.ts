@@ -58,7 +58,7 @@ export class Turtle {
 
   angle: number = 0;
 
-  forward(distance: number): void {
+  forward(distance: number): Turtle {
     this.ctx.save();
     centerCoordinates(this.ctx);
     this.ctx.beginPath();
@@ -105,24 +105,28 @@ export class Turtle {
     if (this.penDown) this.ctx.stroke();
     this.ctx.restore();
     this.draw();
+    return this;
   }
 
-  clear(): void {
+  clear(): Turtle {
     clearContext(this.ctx);
     this.draw();
+    return this;
   }
 
-  hide(): void {
+  hide(): Turtle {
     this.hidden = true;
     this.draw();
+    return this;
   }
 
-  show(): void {
+  show(): Turtle {
     this.hidden = false;
     this.draw();
+    return this;
   }
 
-  reset(): void {
+  reset(): Turtle {
     this.redraw = true;
     this.hidden = false;
     this.wrap = true;
@@ -134,52 +138,62 @@ export class Turtle {
     this.goto(0, 0);
     this.clear();
     this.draw();
+    return this;
   }
 
-  putPenUp(): void {
+  putPenUp(): Turtle {
     this.penDown = false;
+    return this;
   }
 
-  putPenDown(): void {
+  putPenDown(): Turtle {
     this.penDown = true;
+    return this;
   }
 
-  invertPen(): void {
+  invertPen(): Turtle {
     this.penDown = !this.penDown;
+    return this;
   }
 
-  setColor(col: ColorResolvable): void {
+  setColor(col: ColorResolvable): Turtle {
     this.color = convertToColor(col);
     this.ctx.strokeStyle = this.color.toRGBA();
+    return this;
   }
-  setWidth(size: number): void {
+  setWidth(size: number): Turtle {
     this.width = size;
     this.ctx.lineWidth = size;
+    return this;
   }
 
-  setAngle(ang: number): void {
+  setAngle(ang: number): Turtle {
     this.angle = ang;
     this.draw();
+    return this;
   }
 
-  left(ang: number): void {
+  left(ang: number): Turtle {
     this.angle -= ang;
     this.draw();
+    return this;
   }
 
-  right(ang: number): void {
+  right(ang: number): Turtle {
     this.angle += ang;
     this.draw();
+    return this;
   }
 
-  goto(x: number, y: number): void {
+  goto(x: number, y: number): Turtle {
     this.position.x = x;
     this.position.y = y;
     this.draw();
+    return this;
   }
 
-  draw(): void {
-    if (!this.redraw) return;
+  draw(): Turtle {
+    if (!this.redraw) return this;
     //clearContext(this.ctx);
     if (!this.hidden) {
       // const x = this.position.x;
@@ -202,6 +216,7 @@ export class Turtle {
     }
     // Make a composite of the turtle canvas and the image canvas.
     //turtleContext.drawImage(imageCanvas, 0, 0, 700, 700, 0, 0, 700, 700);
+    return this;
   }
 
   constructor(context: CanvasRenderingContext2D) {
