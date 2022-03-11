@@ -364,6 +364,6 @@ export class Turtle {
 
   constructor(context: CanvasRenderingContext2D) {
     this.ctx = context;
-    //this.reset();
+    this.draw();
   }
 }

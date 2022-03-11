@@ -1,4 +1,4 @@
-const htmlColors: Record<string, string> = {
+const htmlColors = {
   black: '#000000',
   silver: '#C0C0C0',
   gray: '#808080',
@@ -147,14 +147,16 @@ const htmlColors: Record<string, string> = {
   snow: '#FFFAFA',
   lightyellow: '#FFFFE0',
   ivory: '#FFFFF0',
-};
+} as const;
 
-export function names(): string[] {
-  return Object.keys(htmlColors);
+export type HTMLColorName = keyof typeof htmlColors;
+
+export function names(): HTMLColorName[] {
+  return Object.keys(htmlColors) as HTMLColorName[];
 }
 
-export function hex(name: string): string {
-  return htmlColors[name.toLowerCase()] ?? '#FFFFFF';
+export function hex(name: HTMLColorName): string | undefined {
+  return htmlColors[name];
 }
 
 export function all(): Record<string, string> {
@@ -165,5 +167,5 @@ export function random(): string {
   const keys = Object.keys(htmlColors);
   const rand = Math.floor(Math.random() * keys.length);
   const key = keys[rand];
-  return htmlColors[key ?? 'black'] ?? '#FFFFFF';
+  return hex(key as HTMLColorName) ?? '#FFFFFF';
 }

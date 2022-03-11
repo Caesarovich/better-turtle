@@ -1,4 +1,4 @@
-import { hex } from './html-colors';
+import { hex, HTMLColorName } from './html-colors';
 
 /**
  * A class for color manipulation.
@@ -85,11 +85,18 @@ export class Color {
   }
 }
 
-export type ColorResolvable = Color | string | [number, number, number];
+export function isHTMLColorName(col: string): col is HTMLColorName {
+  return hex(col as HTMLColorName) != null;
+}
+
+export type ColorResolvable =
+  | Color
+  | HTMLColorName
+  | [number, number, number]
+  | string;
 
 export function convertToColor(col: ColorResolvable): Color {
   if (col instanceof Color) return col;
-
   let rgb: [number, number, number] = [0, 0, 0];
 
   if (Array.isArray(col)) {
@@ -99,7 +106,7 @@ export function convertToColor(col: ColorResolvable): Color {
   } else {
     col.replace(/ /g, '');
     col.toLowerCase();
-    if (hex(col)) col = hex(col) as string;
+    if (hex(col as HTMLColorName)) col = hex(col as HTMLColorName) as string;
     if (col[0] == '#') col = col.slice(1, 7);
 
     if (col.length >= 6) {
