@@ -1,5 +1,10 @@
 import { Color, ColorResolvable, convertToColor } from './colors';
 
+type Vertex2D = { x: number; y: number };
+
+/**
+ * Clears a canvas.
+ */
 function clearContext(context: CanvasRenderingContext2D) {
   context.save();
   context.setTransform(1, 0, 0, 1, 0, 0);
@@ -7,13 +12,40 @@ function clearContext(context: CanvasRenderingContext2D) {
   context.restore();
 }
 
-function degToRad(deg: number) {
+function degToRad(deg: number): number {
   return deg * (Math.PI / 180);
 }
 
-function centerCoordinates(ctx: CanvasRenderingContext2D) {
+function centerCoordinates(ctx: CanvasRenderingContext2D): void {
   ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
   ctx.transform(1, 0, 0, -1, 0, 0);
+}
+
+/**
+ * Rotate a 2D vertex of X degrees. Assuming the Vertex is centered.
+ */
+function rotateVertex(vtx: Vertex2D, deg: number): Vertex2D {
+  const newVtx: Vertex2D = { x: 0, y: 0 };
+  const radius = Math.sqrt(Math.pow(vtx.x, 2) + Math.pow(vtx.y, 2));
+
+  const ang = Math.atan2(vtx.x, vtx.y);
+
+  newVtx.x = Math.sin(degToRad(deg) + ang) * radius;
+  newVtx.y = Math.cos(degToRad(deg) + ang) * radius;
+
+  return newVtx;
+}
+
+function rotateShape(vertices: Vertex2D[], deg: number): Vertex2D[] {
+  const newShape: Vertex2D[] = [];
+
+  for (let i = 0; i < vertices.length; i++) {
+    const vertice = vertices[i];
+
+    if (vertice) newShape[i] = rotateVertex(vertice, deg);
+  }
+
+  return newShape;
 }
 
 /**
@@ -40,6 +72,9 @@ export class Turtle {
    * Determines if the turtle draws on the canvas or not.
    */
   private penDown: boolean = true;
+
+  /** */
+  private preDrawData?: ImageData;
 
   //private stepByStep: boolean = false;
 
@@ -73,6 +108,19 @@ export class Turtle {
    * The current angle of the turtle.
    */
   private angle: number = 0;
+
+  /**
+   * The shape of the turtle which is drawn with the `.draw` method.
+   *
+   * Represented by an array of 2D vertices (X/Y coordinates) defining
+   * the boundaries of the shape.
+   */
+  private shape: Vertex2D[] = [
+    { x: 0, y: 0 },
+    { x: 3, y: -3 },
+    { x: 0, y: 6 },
+    { x: -3, y: -3 },
+  ];
 
   /**
    * Wipes out the canvas.
@@ -115,7 +163,6 @@ export class Turtle {
     this.setAngle(0);
     this.goto(0, 0);
     this.clear();
-    this.draw();
     return this;
   }
 
@@ -165,6 +212,7 @@ export class Turtle {
    */
   setAngle(ang: number): Turtle {
     this.angle = ang;
+    this.restoreImageData();
     this.draw();
     return this;
   }
@@ -174,6 +222,7 @@ export class Turtle {
    */
   left(ang: number): Turtle {
     this.angle -= ang;
+    this.restoreImageData();
     this.draw();
     return this;
   }
@@ -183,6 +232,7 @@ export class Turtle {
    */
   right(ang: number): Turtle {
     this.angle += ang;
+    this.restoreImageData();
     this.draw();
     return this;
   }
@@ -193,6 +243,7 @@ export class Turtle {
   goto(x: number, y: number): Turtle {
     this.position.x = x;
     this.position.y = y;
+    this.restoreImageData();
     this.draw();
     return this;
   }
@@ -201,27 +252,50 @@ export class Turtle {
    * Draws the turtle (The arrow).
    */
   draw(): Turtle {
-    if (!this.hidden) {
-      // const x = this.position.x;
-      // const y = this.position.y;
-      // var w = 10;
-      // var h = 15;
-      //   turtleContext.save();
-      //   centerCoords(turtleContext);
-      //   turtleContext.translate(x, y);
-      //   turtleContext.rotate(-turtle.angle);
-      //   turtleContext.translate(-x, -y);
-      //   turtleContext.beginPath();
-      //   turtleContext.moveTo(x - w / 2, y);
-      //   turtleContext.lineTo(x + w / 2, y);
-      //   turtleContext.lineTo(x, y + h);
-      //   turtleContext.closePath();
-      //   turtleContext.fillStyle = 'green';
-      //   turtleContext.fill();
-      //   turtleContext.restore();
+    this.saveImageData();
+    if (this.hidden) return this;
+
+    const shape = rotateShape(this.shape, this.angle);
+
+    const x = this.position.x;
+    const y = this.position.y;
+
+    this.ctx.save();
+    centerCoordinates(this.ctx);
+
+    this.ctx.beginPath();
+    this.ctx.moveTo(x, y);
+    for (let i = 0; i < shape.length; i++) {
+      const vertex = shape[i];
+      if (vertex) this.ctx.lineTo(x + vertex.x, y + vertex.y);
     }
-    // Make a composite of the turtle canvas and the image canvas.
-    //turtleContext.drawImage(imageCanvas, 0, 0, 700, 700, 0, 0, 700, 700);
+    this.ctx.closePath();
+
+    this.ctx.fillStyle = 'green';
+    this.ctx.fill();
+    this.ctx.restore();
+    return this;
+  }
+
+  /**
+   * Saves the current image into `.preDrawData`.
+   */
+  saveImageData(): Turtle {
+    this.preDrawData = this.ctx.getImageData(
+      0,
+      0,
+      this.ctx.canvas.width,
+      this.ctx.canvas.height
+    );
+
+    return this;
+  }
+
+  /**
+   * Restores the image from `.preDrawData`.
+   */
+  restoreImageData(): Turtle {
+    if (this.preDrawData) this.ctx.putImageData(this.preDrawData, 0, 0);
     return this;
   }
 
@@ -229,6 +303,7 @@ export class Turtle {
    * Makes the turtle walk forward and draw a line.
    */
   forward(distance: number): Turtle {
+    this.restoreImageData();
     this.ctx.save();
     centerCoordinates(this.ctx);
     this.ctx.lineWidth = this.width;
@@ -252,6 +327,7 @@ export class Turtle {
 
       this.ctx.moveTo(x, y);
       if (
+        // Crossing X boundaries
         this.wrap &&
         Math.abs(newX) > w &&
         distanceToEdgeX <= distanceToEdgeY
@@ -262,6 +338,7 @@ export class Turtle {
         newX -= newX > 0 ? w * 2 : -(w * 2);
         distance -= distanceToEdgeX;
       } else if (
+        // Crossing Y boundaries
         this.wrap &&
         Math.abs(newY) > h &&
         distanceToEdgeX >= distanceToEdgeY
@@ -272,21 +349,21 @@ export class Turtle {
         newY -= newY > 0 ? h * 2 : -(h * 2);
         distance -= distanceToEdgeY;
       } else {
+        // Does not cross any boundary
         this.ctx.lineTo(newX, newY);
         distance = 0;
       }
     }
 
-    this.goto(newX, newY);
-
     if (this.penDown) this.ctx.stroke();
     this.ctx.restore();
-    this.draw();
+    this.saveImageData();
+    this.goto(newX, newY);
     return this;
   }
 
   constructor(context: CanvasRenderingContext2D) {
     this.ctx = context;
-    this.reset();
+    //this.reset();
   }
 }

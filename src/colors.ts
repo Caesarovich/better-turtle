@@ -7,23 +7,30 @@ export class Color {
   /**
    * The `red` component of the color.
    */
-  r: Number = 0;
+  private r: number = 0;
 
   /**
    * The `green` component of the color.
    */
-  g: Number = 0;
+  private g: number = 0;
 
   /**
    * The `blue` component of the color.
    */
-  b: Number = 0;
+  private b: number = 0;
+
+  /**
+   * The `alpha` component of the color (opacity).
+   *
+   * Ranges from 0 to 1.
+   */
+  private a: number = 1;
 
   /**
    * Get the RGB value of the color as an array of integers.
    */
 
-  get rgb(): [Number, Number, Number] {
+  get rgb(): [number, number, number] {
     return [this.r, this.g, this.b];
   }
 
@@ -70,18 +77,20 @@ export class Color {
    *
    */
   toRGBA(): string {
-    return `rgba(${this.r}, ${this.g}, ${this.b}, 1)`;
+    return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`;
   }
 
-  constructor(rgb: [Number, Number, Number]) {
+  constructor(rgb: [number, number, number]) {
     this.rgb = rgb;
   }
 }
 
-export type ColorResolvable = string | [Number, Number, Number];
+export type ColorResolvable = Color | string | [number, number, number];
 
 export function convertToColor(col: ColorResolvable): Color {
-  let rgb: [Number, Number, Number] = [0, 0, 0];
+  if (col instanceof Color) return col;
+
+  let rgb: [number, number, number] = [0, 0, 0];
 
   if (Array.isArray(col)) {
     rgb[0] ??= col[0];
