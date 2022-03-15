@@ -1,6 +1,5 @@
 import { Color, ColorResolvable, convertToColor } from './colors';
-
-type Vertex2D = { x: number; y: number };
+import { Vertex2D, rotateShape, degToRad, BuiltInShapes } from './shapes';
 
 /**
  * Clears a canvas.
@@ -12,40 +11,9 @@ function clearContext(context: CanvasRenderingContext2D) {
   context.restore();
 }
 
-function degToRad(deg: number): number {
-  return deg * (Math.PI / 180);
-}
-
 function centerCoordinates(ctx: CanvasRenderingContext2D): void {
   ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
   ctx.transform(1, 0, 0, -1, 0, 0);
-}
-
-/**
- * Rotate a 2D vertex of X degrees. Assuming the Vertex is centered.
- */
-function rotateVertex(vtx: Vertex2D, deg: number): Vertex2D {
-  const newVtx: Vertex2D = { x: 0, y: 0 };
-  const radius = Math.sqrt(Math.pow(vtx.x, 2) + Math.pow(vtx.y, 2));
-
-  const ang = Math.atan2(vtx.x, vtx.y);
-
-  newVtx.x = Math.sin(degToRad(deg) + ang) * radius;
-  newVtx.y = Math.cos(degToRad(deg) + ang) * radius;
-
-  return newVtx;
-}
-
-function rotateShape(vertices: Vertex2D[], deg: number): Vertex2D[] {
-  const newShape: Vertex2D[] = [];
-
-  for (let i = 0; i < vertices.length; i++) {
-    const vertice = vertices[i];
-
-    if (vertice) newShape[i] = rotateVertex(vertice, deg);
-  }
-
-  return newShape;
 }
 
 /**
@@ -115,12 +83,7 @@ export class Turtle {
    * Represented by an array of 2D vertices (X/Y coordinates) defining
    * the boundaries of the shape.
    */
-  private shape: Vertex2D[] = [
-    { x: 0, y: 0 },
-    { x: 3, y: -3 },
-    { x: 0, y: 6 },
-    { x: -3, y: -3 },
-  ];
+  private shape: Vertex2D[] = BuiltInShapes.Default;
 
   /**
    * Wipes out the canvas.
@@ -301,6 +264,8 @@ export class Turtle {
 
   /**
    * Makes the turtle walk forward and draw a line.
+   *
+   * @param distance The distance in pixels for the turtle to travel.
    */
   forward(distance: number): Turtle {
     this.restoreImageData();
@@ -359,6 +324,43 @@ export class Turtle {
     this.ctx.restore();
     this.saveImageData();
     this.goto(newX, newY);
+    return this;
+  }
+
+  /**
+   * Draws a grid on the Canvas. Pretty useful to be precise.
+   *
+   * @param separations The number of separations on the grid.
+   */
+  drawGrid(separations: number): Turtle {
+    // Make it minimum 2
+    separations = Math.max(2, separations);
+
+    const oldAngle = this.angle;
+    const oldColor = this.color;
+    const oldWidth = this.width;
+    const oldX = this.position.x;
+    const oldY = this.position.y;
+    const w = this.ctx.canvas.width;
+    const h = this.ctx.canvas.height;
+
+    this.setColor('grey');
+    this.setWidth(2);
+
+    for (let i = 1; i < separations; i++) {
+      this.setAngle(90);
+      this.goto(-(w / 2), h - (h / separations) * i - h / 2);
+      this.forward(w);
+      this.setAngle(180);
+      this.goto(w - (w / separations) * i - w / 2, h / 2);
+      this.forward(h);
+    }
+
+    this.setAngle(oldAngle);
+    this.setColor(oldColor);
+    this.setWidth(oldWidth);
+    this.goto(oldX, oldY);
+    this.ctx.restore();
     return this;
   }
 
