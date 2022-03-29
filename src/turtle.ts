@@ -30,6 +30,8 @@ export enum StepType {
   PenDown,
   Reset,
   Goto,
+  SetColor,
+  SetWidth,
 }
 
 type Step =
@@ -67,6 +69,14 @@ type Step =
     }
   | {
       type: StepType.Reset;
+    }
+  | {
+      type: StepType.SetWidth;
+      args: [number];
+    }
+  | {
+      type: StepType.SetColor;
+      args: [ColorResolvable];
     };
 
 /**
@@ -181,6 +191,8 @@ export class Turtle {
     if (step.type === StepType.PenDown) this.putPenDown();
     if (step.type === StepType.PenUp) this.putPenUp();
     if (step.type === StepType.Reset) this.reset();
+    if (step.type === StepType.SetColor) this.setColor(...step.args);
+    if (step.type === StepType.SetWidth) this.setWidth(...step.args);
 
     return this;
   }
@@ -312,7 +324,9 @@ export class Turtle {
    * @param col Any value resolvable to a color.
    */
   setColor(col: ColorResolvable): Turtle {
-    this.color = convertToColor(col);
+    if (!this.inStep) {
+      this.steps.push({ type: StepType.SetColor, args: [col] });
+    } else this.color = convertToColor(col);
     return this;
   }
 
@@ -320,7 +334,9 @@ export class Turtle {
    * Sets a new width to be used for drawing lines.
    */
   setWidth(size: number): Turtle {
-    this.width = size;
+    if (!this.inStep) {
+      this.steps.push({ type: StepType.SetWidth, args: [size] });
+    } else this.width = size;
     return this;
   }
 
@@ -530,6 +546,22 @@ export class Turtle {
     this.goto(oldX, oldY);
     this.ctx.restore();
     this.step = false;
+    return this;
+  }
+
+  expose(obj: any): Turtle {
+    obj.forward = this.forward.bind(this);
+    obj.left = this.left.bind(this);
+    obj.right = this.right.bind(this);
+    obj.setAngle = this.setAngle.bind(this);
+    obj.hide = this.hide.bind(this);
+    obj.show = this.show.bind(this);
+    obj.putPenUp = this.putPenUp.bind(this);
+    obj.putPenDown = this.putPenDown.bind(this);
+    obj.reset = this.reset.bind(this);
+    obj.goto = this.goto.bind(this);
+    obj.setColor = this.setColor.bind(this);
+    obj.setWidth = this.setWidth.bind(this);
     return this;
   }
 
