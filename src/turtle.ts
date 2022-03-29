@@ -1,5 +1,11 @@
 import { Color, ColorResolvable, convertToColor } from './colors';
-import { Vertex2D, rotateShape, degToRad, BuiltInShapes } from './shapes';
+import {
+  Vertex2D,
+  rotateShape,
+  degToRad,
+  BuiltInShapes,
+  resizeShape,
+} from './shapes';
 
 /**
  * Clears a canvas.
@@ -396,7 +402,12 @@ export class Turtle {
     this.saveImageData();
     if (this.hidden) return this;
 
-    const shape = rotateShape(this.shape, this.angle);
+    const proportionalSize = Math.max(this.width / 2, 1);
+
+    const shape = rotateShape(
+      resizeShape(this.shape, proportionalSize),
+      this.angle
+    );
 
     const x = this.position.x;
     const y = this.position.y;
@@ -549,6 +560,13 @@ export class Turtle {
     return this;
   }
 
+  /**
+   * Expose the Turtle's methods onto an object.
+   * This is very useful for example when using it with the `window` object,
+   * abstracting method calls to simple functions calls.
+   *
+   * @param obj Any JavaScript Object
+   */
   expose(obj: any): Turtle {
     obj.forward = this.forward.bind(this);
     obj.left = this.left.bind(this);

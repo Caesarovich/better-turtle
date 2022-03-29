@@ -48,3 +48,20 @@ export function rotateShape(vertices: Vertex2D[], deg: number): Vertex2D[] {
 
   return newShape;
 }
+
+export function resizeShape(vertices: Vertex2D[], size: number): Vertex2D[] {
+  const newShape: Vertex2D[] = [];
+
+  for (let i = 0; i < vertices.length; i++) {
+    const vertice = vertices[i];
+
+    if (vertice) {
+      const vtx: Vertex2D = { x: vertice.x, y: vertice.y };
+      vtx.x *= size;
+      vtx.y *= size;
+      newShape[i] = vtx;
+    }
+  }
+
+  return newShape;
+}
