@@ -86,6 +86,61 @@ type Step =
     };
 
 /**
+ * A set of options to apply to a Turtle instance.
+ */
+export interface TurtleOptions {
+  /**
+   * Wether the turtle should be hidden.
+   *
+   * @default false
+   */
+  hidden?: boolean;
+
+  /**
+   * Wether or not to disable wrapping the turtle around the canvas.
+   * The turtle goes around when overflowing.
+   *
+   * @default false
+   */
+  disableWrapping?: boolean;
+
+  /**
+   * The default drawing color.
+   *
+   * @default '[255, 0, 255]'
+   */
+  defaultColor?: ColorResolvable;
+
+  /**
+   * The default drawing width.
+   *
+   * @default 2
+   */
+  width?: number;
+
+  /**
+   * The position on which to start drawing.
+   *
+   * @default '{x: 0, y: 0}'
+   */
+  startPostition?: Vertex2D;
+
+  /**
+   * The angle at which to start drawing.
+   *
+   * @default 0
+   */
+  startAngle?: number;
+
+  /**
+   * The shape of the turtle.
+   *
+   * @default BuiltInShapes.Default
+   */
+  shape?: Vertex2D[];
+}
+
+/**
  * A Turtle to draw on a canvas.
  */
 export class Turtle {
@@ -163,10 +218,7 @@ export class Turtle {
   /**
    * The current X/Y position of the turtle on the canvas.
    */
-  private position: {
-    x: number;
-    y: number;
-  } = { x: 0, y: 0 };
+  private position: Vertex2D = { x: 0, y: 0 };
 
   /**
    * The current angle of the turtle.
@@ -417,10 +469,12 @@ export class Turtle {
 
     this.ctx.beginPath();
     this.ctx.moveTo(x, y);
+
     for (let i = 0; i < shape.length; i++) {
       const vertex = shape[i];
       if (vertex) this.ctx.lineTo(x + vertex.x, y + vertex.y);
     }
+
     this.ctx.closePath();
 
     this.ctx.fillStyle = this.color.toHex();
@@ -586,8 +640,18 @@ export class Turtle {
     return this;
   }
 
-  constructor(context: CanvasRenderingContext2D) {
+  constructor(context: CanvasRenderingContext2D, options?: TurtleOptions) {
     this.ctx = context;
+
+    if (options?.hidden) this.hidden = options.hidden;
+    if (options?.disableWrapping) this.wrap = !options.disableWrapping;
+    if (options?.defaultColor)
+      this.color = convertToColor(options.defaultColor);
+    if (options?.width) this.width = options.width;
+    if (options?.startPostition) this.position = options.startPostition;
+    if (options?.startAngle) this.angle = options.startAngle;
+    if (options?.shape) this.shape = options.shape;
+
     this.draw();
   }
 }

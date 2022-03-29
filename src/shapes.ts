@@ -8,9 +8,9 @@ const defaultShape: Vertex2D[] = [
 ];
 
 const triangleShape: Vertex2D[] = [
-  { x: 3, y: -3 },
+  { x: 3, y: 0 },
   { x: 0, y: 6 },
-  { x: -3, y: -3 },
+  { x: -3, y: 0 },
 ];
 
 export const BuiltInShapes = {
