@@ -4,11 +4,11 @@ module.exports = {
   entry: './dist/index.js',
   mode: 'production',
   output: {
-    filename: '[name].bundle.js',
+    filename: '[name].min.js',
     path: path.resolve(__dirname, 'dist'),
-    library: 'turtle',
+    library: 'turtlejs',
     libraryTarget: 'umd',
     umdNamedDefine: true,
-    auxiliaryComment: 'Test Comment',
+    auxiliaryComment: 'Turtle JS redefined',
   },
 };

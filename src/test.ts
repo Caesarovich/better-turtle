@@ -9,11 +9,23 @@ const ctx = canvas.getContext('2d');
 
 const turtle = new Turtle(ctx as CanvasRenderingContext2D);
 
-turtle.setColor('blue').setWidth(1).left(5).forward(5700);
+turtle
+  .hide()
+  .setColor('red')
+  .setWidth(4)
+  .goto(0, 0)
+  .setAngle(0)
+  .forward(100)
+  .show()
+  .left(90)
+  .forward(50)
+  .left(90)
+  .forward(100)
+  .left(70)
+  .hide()
+  .forward(50)
+  .right(90);
 
-turtle.setColor('red').left(90).forward(6000);
-
-turtle.setColor('green').right(30).forward(6000);
 const stream = canvas.createPNGStream();
 
 stream.pipe(outStream);

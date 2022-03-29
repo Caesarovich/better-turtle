@@ -17,6 +17,59 @@ function centerCoordinates(ctx: CanvasRenderingContext2D): void {
 }
 
 /**
+ * The different types of steps the turtle is making.
+ */
+export enum StepType {
+  Forward,
+  Left,
+  Right,
+  SetAngle,
+  Hide,
+  Show,
+  PenUp,
+  PenDown,
+  Reset,
+  Goto,
+}
+
+type Step =
+  | {
+      type: StepType.Forward;
+      args: [number];
+    }
+  | {
+      type: StepType.Hide;
+    }
+  | {
+      type: StepType.Show;
+    }
+  | {
+      type: StepType.Left;
+      args: [number];
+    }
+  | {
+      type: StepType.Right;
+      args: [number];
+    }
+  | {
+      type: StepType.Goto;
+      args: [number, number];
+    }
+  | {
+      type: StepType.SetAngle;
+      args: [number];
+    }
+  | {
+      type: StepType.PenDown;
+    }
+  | {
+      type: StepType.PenUp;
+    }
+  | {
+      type: StepType.Reset;
+    };
+
+/**
  * A Turtle to draw on a canvas.
  */
 export class Turtle {
@@ -41,18 +94,37 @@ export class Turtle {
    */
   private penDown: boolean = true;
 
-  /** */
+  /**
+   * Canvas Image data before drawing the turtle.
+   */
   private preDrawData?: ImageData;
 
-  //private stepByStep: boolean = false;
+  /**
+   * Wether or not the Turtle is in Step by Step mode.
+   * Enabled using `.setSpeed`.
+   */
+  private stepByStep: boolean = false;
 
-  //private step: boolean = false;
+  /**
+   * Wether or not the Turtle is currently perfoming a step.
+   * Use `.inStep` instead.
+   */
+  private step: boolean = false;
 
-  //private steps: [string, string][] = [];
+  /**
+   * The queue of steps do execute.
+   */
+  private steps: Step[] = [];
 
-  //private speed?: number;
+  /**
+   * The delay in ms between each steps.
+   */
+  speed?: number;
 
-  //private interval?: TimerHandler;
+  /**
+   * The timer identifier for the step interval.
+   */
+  private interval?: ReturnType<typeof setInterval>;
 
   /**
    * The Color object representing the current color of the turtle.
@@ -63,6 +135,14 @@ export class Turtle {
    * The current width of the turtle's drawing.
    */
   private width: number = 1;
+
+  /**
+   * Wether or not the turtle is doing a step.
+   */
+  private get inStep(): boolean {
+    if (!this.stepByStep) return true;
+    return this.step;
+  }
 
   /**
    * The current X/Y position of the turtle on the canvas.
@@ -86,6 +166,43 @@ export class Turtle {
   private shape: Vertex2D[] = BuiltInShapes.Default;
 
   /**
+   * Execute a certain step.
+   * @param step The step to execute
+   */
+  private doStep(step: Step): Turtle {
+    // TODO: Make this correctly
+    if (step.type === StepType.Goto) this.goto(...step.args);
+    if (step.type === StepType.SetAngle) this.setAngle(...step.args);
+    if (step.type === StepType.Forward) this.forward(...step.args);
+    if (step.type === StepType.Left) this.left(...step.args);
+    if (step.type === StepType.Right) this.right(...step.args);
+    if (step.type === StepType.Hide) this.hide();
+    if (step.type === StepType.Show) this.show();
+    if (step.type === StepType.PenDown) this.putPenDown();
+    if (step.type === StepType.PenUp) this.putPenUp();
+    if (step.type === StepType.Reset) this.reset();
+
+    return this;
+  }
+
+  /**
+   * Execute the next step in the queue. Call this method to skip the interval.
+   */
+  private nextStep(): Turtle {
+    const step = this.steps.shift();
+    if (step) {
+      this.step = true;
+      this.doStep(step);
+      this.step = false;
+    } else if (this.interval) {
+      clearInterval(this.interval);
+      this.interval = undefined;
+    }
+
+    return this;
+  }
+
+  /**
    * Wipes out the canvas.
    * @returns {Turtle} For method chaining.
    */
@@ -99,8 +216,11 @@ export class Turtle {
    * Hide the turtle.
    */
   hide(): Turtle {
-    this.hidden = true;
-    this.draw();
+    if (this.inStep) {
+      this.hidden = true;
+      this.restoreImageData();
+      this.draw();
+    } else this.steps.push({ type: StepType.Hide });
     return this;
   }
 
@@ -108,8 +228,10 @@ export class Turtle {
    * Show the turtle.
    */
   show(): Turtle {
-    this.hidden = false;
-    this.draw();
+    if (this.inStep) {
+      this.hidden = false;
+      this.draw();
+    } else this.steps.push({ type: StepType.Show });
     return this;
   }
 
@@ -117,15 +239,43 @@ export class Turtle {
    * Reset the turtle and the canvas.
    */
   reset(): Turtle {
-    this.hidden = false;
-    this.wrap = true;
-    this.penDown = true;
-    //this.stepByStep = false;
-    this.setWidth(1);
-    this.setColor([0, 0, 0]);
-    this.setAngle(0);
-    this.goto(0, 0);
-    this.clear();
+    if (this.inStep) {
+      this.hidden = false;
+      this.wrap = true;
+      this.penDown = true;
+      this.stepByStep = false;
+      this.setWidth(1);
+      this.setColor([0, 0, 0]);
+      this.setAngle(0);
+      this.goto(0, 0);
+      this.clear();
+    } else this.steps.push({ type: StepType.Reset });
+    return this;
+  }
+
+  /**
+   * Change the shape used to draw the turtle.
+   *
+   * @param shape An array of X/Y coordinates.
+   */
+  setShape(shape: Vertex2D[]): Turtle {
+    this.shape = shape;
+    this.draw();
+    return this;
+  }
+
+  /**
+   * Enable Step by Step mode and set the delay in ms between each steps.
+   * @param ms The delay between each steps
+   */
+  setSpeed(ms: number): Turtle {
+    this.stepByStep = ms > 0;
+    this.speed = ms;
+
+    if (this.interval) clearInterval(this.interval);
+
+    this.interval = setInterval(this.nextStep.bind(this), ms);
+
     return this;
   }
 
@@ -133,7 +283,9 @@ export class Turtle {
    * Puts the pen up to stop drawing.
    */
   putPenUp(): Turtle {
-    this.penDown = false;
+    if (this.inStep) {
+      this.penDown = false;
+    } else this.steps.push({ type: StepType.PenUp });
     return this;
   }
 
@@ -141,7 +293,9 @@ export class Turtle {
    * Puts the pen down to start drawing.
    */
   putPenDown(): Turtle {
-    this.penDown = true;
+    if (this.inStep) {
+      this.penDown = true;
+    } else this.steps.push({ type: StepType.PenDown });
     return this;
   }
 
@@ -174,9 +328,11 @@ export class Turtle {
    * Set the turtle to this angle.
    */
   setAngle(ang: number): Turtle {
-    this.angle = ang;
-    this.restoreImageData();
-    this.draw();
+    if (this.inStep) {
+      this.angle = ang;
+      this.restoreImageData();
+      this.draw();
+    } else this.steps.push({ type: StepType.SetAngle, args: [ang] });
     return this;
   }
 
@@ -184,9 +340,11 @@ export class Turtle {
    * Rotate the turtle on the left.
    */
   left(ang: number): Turtle {
-    this.angle -= ang;
-    this.restoreImageData();
-    this.draw();
+    if (this.inStep) {
+      this.angle -= ang;
+      this.restoreImageData();
+      this.draw();
+    } else this.steps.push({ type: StepType.Left, args: [ang] });
     return this;
   }
 
@@ -194,9 +352,11 @@ export class Turtle {
    * Rotate the turtle on the right.
    */
   right(ang: number): Turtle {
-    this.angle += ang;
-    this.restoreImageData();
-    this.draw();
+    if (this.inStep) {
+      this.angle += ang;
+      this.restoreImageData();
+      this.draw();
+    } else this.steps.push({ type: StepType.Right, args: [ang] });
     return this;
   }
 
@@ -204,10 +364,12 @@ export class Turtle {
    * Sends the turtle at a new position.
    */
   goto(x: number, y: number): Turtle {
-    this.position.x = x;
-    this.position.y = y;
-    this.restoreImageData();
-    this.draw();
+    if (this.inStep) {
+      this.position.x = x;
+      this.position.y = y;
+      this.restoreImageData();
+      this.draw();
+    } else this.steps.push({ type: StepType.Goto, args: [x, y] });
     return this;
   }
 
@@ -268,6 +430,11 @@ export class Turtle {
    * @param distance The distance in pixels for the turtle to travel.
    */
   forward(distance: number): Turtle {
+    if (!this.inStep) {
+      this.steps.push({ type: StepType.Forward, args: [distance] });
+      return this;
+    }
+
     this.restoreImageData();
     this.ctx.save();
     centerCoordinates(this.ctx);
@@ -336,6 +503,7 @@ export class Turtle {
     // Make it minimum 2
     separations = Math.max(2, separations);
 
+    this.step = true;
     const oldAngle = this.angle;
     const oldColor = this.color;
     const oldWidth = this.width;
@@ -361,6 +529,7 @@ export class Turtle {
     this.setWidth(oldWidth);
     this.goto(oldX, oldY);
     this.ctx.restore();
+    this.step = false;
     return this;
   }
 
