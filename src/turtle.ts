@@ -423,8 +423,11 @@ export class Turtle {
     }
     this.ctx.closePath();
 
-    this.ctx.fillStyle = 'green';
+    this.ctx.fillStyle = this.color.toHex();
     this.ctx.fill();
+    this.ctx.lineWidth = Math.max(this.width / 4, 1);
+    this.ctx.strokeStyle = 'black';
+    this.ctx.stroke();
     this.ctx.restore();
     return this;
   }
