@@ -384,7 +384,11 @@ export class Turtle {
   setColor(col: ColorResolvable): Turtle {
     if (!this.inStep) {
       this.steps.push({ type: StepType.SetColor, args: [col] });
-    } else this.color = convertToColor(col);
+    } else {
+      this.color = convertToColor(col);
+    }
+    this.restoreImageData();
+    this.draw();
     return this;
   }
 
@@ -394,7 +398,11 @@ export class Turtle {
   setWidth(size: number): Turtle {
     if (!this.inStep) {
       this.steps.push({ type: StepType.SetWidth, args: [size] });
-    } else this.width = size;
+    } else {
+      this.width = size;
+      this.restoreImageData();
+      this.draw();
+    }
     return this;
   }
 
