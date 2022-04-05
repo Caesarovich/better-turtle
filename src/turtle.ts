@@ -86,6 +86,27 @@ type Step =
     };
 
 /**
+ * Represents a remapping of method's names when exposing them onto a JavaScript object.
+ *
+ * @see {@link Turtle.expose}
+ */
+
+export interface ExposeRemap {
+  forward?: string;
+  left?: string;
+  right?: string;
+  setAngle?: string;
+  hide?: string;
+  show?: string;
+  putPenUp?: string;
+  putPenDown?: string;
+  reset?: string;
+  goto?: string;
+  setColor?: string;
+  setWidth?: string;
+}
+
+/**
  * A set of options to apply to a Turtle instance.
  */
 export interface TurtleOptions {
@@ -172,7 +193,7 @@ export class Turtle {
 
   /**
    * Wether or not the Turtle is in Step by Step mode.
-   * Enabled using `.setSpeed`.
+   * Enabled using {@link Turtle.setSpeed}.
    */
   private stepByStep: boolean = false;
 
@@ -235,7 +256,9 @@ export class Turtle {
 
   /**
    * Execute a certain step.
+   *
    * @param step The step to execute
+   * @returns {Turtle} For method chaining.
    */
   private doStep(step: Step): Turtle {
     // TODO: Make this correctly
@@ -257,6 +280,8 @@ export class Turtle {
 
   /**
    * Execute the next step in the queue. Call this method to skip the interval.
+   *
+   * @returns {Turtle} For method chaining.
    */
   private nextStep(): Turtle {
     const step = this.steps.shift();
@@ -274,6 +299,7 @@ export class Turtle {
 
   /**
    * Wipes out the canvas.
+   *
    * @returns {Turtle} For method chaining.
    */
   clear(): Turtle {
@@ -284,6 +310,8 @@ export class Turtle {
 
   /**
    * Hide the turtle.
+   *
+   * @returns {Turtle} For method chaining.
    */
   hide(): Turtle {
     if (this.inStep) {
@@ -296,6 +324,8 @@ export class Turtle {
 
   /**
    * Show the turtle.
+   *
+   * @returns {Turtle} For method chaining.
    */
   show(): Turtle {
     if (this.inStep) {
@@ -307,6 +337,8 @@ export class Turtle {
 
   /**
    * Reset the turtle and the canvas.
+   *
+   * @returns {Turtle} For method chaining.
    */
   reset(): Turtle {
     if (this.inStep) {
@@ -327,6 +359,7 @@ export class Turtle {
    * Change the shape used to draw the turtle.
    *
    * @param shape An array of X/Y coordinates.
+   * @returns {Turtle} For method chaining.
    */
   setShape(shape: Vertex2D[]): Turtle {
     this.shape = shape;
@@ -336,7 +369,9 @@ export class Turtle {
 
   /**
    * Enable Step by Step mode and set the delay in ms between each steps.
+   *
    * @param ms The delay between each steps
+   * @returns {Turtle} For method chaining.
    */
   setSpeed(ms: number): Turtle {
     this.stepByStep = ms > 0;
@@ -351,6 +386,8 @@ export class Turtle {
 
   /**
    * Puts the pen up to stop drawing.
+   *
+   * @returns {Turtle} For method chaining.
    */
   putPenUp(): Turtle {
     if (this.inStep) {
@@ -361,6 +398,8 @@ export class Turtle {
 
   /**
    * Puts the pen down to start drawing.
+   *
+   * @returns {Turtle} For method chaining.
    */
   putPenDown(): Turtle {
     if (this.inStep) {
@@ -371,6 +410,8 @@ export class Turtle {
 
   /**
    * Inverts the position of the pen.
+   *
+   * @returns {Turtle} For method chaining.
    */
   invertPen(): Turtle {
     this.penDown = !this.penDown;
@@ -379,7 +420,9 @@ export class Turtle {
 
   /**
    * Sets a new color to be used for drawing.
+   *
    * @param col Any value resolvable to a color.
+   * @returns {Turtle} For method chaining.
    */
   setColor(col: ColorResolvable): Turtle {
     if (!this.inStep) {
@@ -394,6 +437,8 @@ export class Turtle {
 
   /**
    * Sets a new width to be used for drawing lines.
+   *
+   * @returns {Turtle} For method chaining.
    */
   setWidth(size: number): Turtle {
     if (!this.inStep) {
@@ -408,6 +453,8 @@ export class Turtle {
 
   /**
    * Set the turtle to this angle.
+   *
+   * @returns {Turtle} For method chaining.
    */
   setAngle(ang: number): Turtle {
     if (this.inStep) {
@@ -420,6 +467,8 @@ export class Turtle {
 
   /**
    * Rotate the turtle on the left.
+   *
+   * @returns {Turtle} For method chaining.
    */
   left(ang: number): Turtle {
     if (this.inStep) {
@@ -432,6 +481,8 @@ export class Turtle {
 
   /**
    * Rotate the turtle on the right.
+   *
+   * @returns {Turtle} For method chaining.
    */
   right(ang: number): Turtle {
     if (this.inStep) {
@@ -444,6 +495,8 @@ export class Turtle {
 
   /**
    * Sends the turtle at a new position.
+   *
+   * @returns {Turtle} For method chaining.
    */
   goto(x: number, y: number): Turtle {
     if (this.inStep) {
@@ -457,6 +510,8 @@ export class Turtle {
 
   /**
    * Draws the turtle (The arrow).
+   *
+   * @returns {Turtle} For method chaining.
    */
   draw(): Turtle {
     this.saveImageData();
@@ -495,7 +550,9 @@ export class Turtle {
   }
 
   /**
-   * Saves the current image into `.preDrawData`.
+   * Saves the current image into {@link Turtle.preDrawData}.
+   *
+   * @returns {Turtle} For method chaining.
    */
   saveImageData(): Turtle {
     this.preDrawData = this.ctx.getImageData(
@@ -509,7 +566,9 @@ export class Turtle {
   }
 
   /**
-   * Restores the image from `.preDrawData`.
+   * Restores the image from {@link Turtle.preDrawData}.
+   *
+   * @returns {Turtle} For method chaining.
    */
   restoreImageData(): Turtle {
     if (this.preDrawData) this.ctx.putImageData(this.preDrawData, 0, 0);
@@ -520,6 +579,7 @@ export class Turtle {
    * Makes the turtle walk forward and draw a line.
    *
    * @param distance The distance in pixels for the turtle to travel.
+   * @returns {Turtle} For method chaining.
    */
   forward(distance: number): Turtle {
     if (!this.inStep) {
@@ -590,6 +650,7 @@ export class Turtle {
    * Draws a grid on the Canvas. Pretty useful to be precise.
    *
    * @param separations The number of separations on the grid.
+   * @returns {Turtle} For method chaining.
    */
   drawGrid(separations: number): Turtle {
     // Make it minimum 2
@@ -631,20 +692,22 @@ export class Turtle {
    * abstracting method calls to simple functions calls.
    *
    * @param obj Any JavaScript Object
+   * @param remap A remap object to remap method's names
+   * @returns {Turtle} For method chaining.
    */
-  expose(obj: any): Turtle {
-    obj.forward = this.forward.bind(this);
-    obj.left = this.left.bind(this);
-    obj.right = this.right.bind(this);
-    obj.setAngle = this.setAngle.bind(this);
-    obj.hide = this.hide.bind(this);
-    obj.show = this.show.bind(this);
-    obj.putPenUp = this.putPenUp.bind(this);
-    obj.putPenDown = this.putPenDown.bind(this);
-    obj.reset = this.reset.bind(this);
-    obj.goto = this.goto.bind(this);
-    obj.setColor = this.setColor.bind(this);
-    obj.setWidth = this.setWidth.bind(this);
+  expose(obj: any, remap?: ExposeRemap): Turtle {
+    obj[remap?.forward ?? 'forward'] = this.forward.bind(this);
+    obj[remap?.left ?? 'left'] = this.left.bind(this);
+    obj[remap?.right ?? 'right'] = this.right.bind(this);
+    obj[remap?.setAngle ?? 'setAngle'] = this.setAngle.bind(this);
+    obj[remap?.hide ?? 'hide'] = this.hide.bind(this);
+    obj[remap?.show ?? 'show'] = this.show.bind(this);
+    obj[remap?.putPenUp ?? 'putPenUp'] = this.putPenUp.bind(this);
+    obj[remap?.putPenDown ?? 'putPenDown'] = this.putPenDown.bind(this);
+    obj[remap?.reset ?? 'reset'] = this.reset.bind(this);
+    obj[remap?.goto ?? 'goto'] = this.goto.bind(this);
+    obj[remap?.setColor ?? 'setColor'] = this.setColor.bind(this);
+    obj[remap?.setWidth ?? 'setWidth'] = this.setWidth.bind(this);
     return this;
   }
 
