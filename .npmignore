@@ -6,3 +6,6 @@ src
 
 # Ignore config files
 *.config.*
+
+# Ignore .min files
+*.min.*
