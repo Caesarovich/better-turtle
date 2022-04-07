@@ -8,7 +8,7 @@
     "format": "prettier -w src/*",
     "check-format": "prettier -c src/*",
     "build": "tsc",
-    "prepack": "build",
+    "prepack": "npm run build",
     "rebuild": "npm run clean && npm run build",
     "clean": "rm -rf dist",
     "doc": "typedoc src/index.ts"

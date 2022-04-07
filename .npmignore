@@ -1,0 +1,8 @@
+# Ignore documentation
+docs
+
+# Ignore Typescript source
+src
+
+# Ignore config files
+*.config.*
