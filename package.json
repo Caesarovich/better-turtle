@@ -1,7 +1,7 @@
 {
-  "name": "ts-turtle",
+  "name": "turtle-ts",
   "version": "1.0.0",
-  "description": "A TypeScript port of the famous js-turtle project",
+  "description": "A TypeScript port of the famous Turtle JS project",
   "main": "index.js",
   "scripts": {
     "test": "npm run build && node dist/test.js",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Caesarovich/ts-turtle.git"
+    "url": "git+https://github.com/Caesarovich/turtle-ts.git"
   },
   "keywords": [
     "js-turtle",
@@ -25,9 +25,9 @@
   "author": "Caesarovich",
   "license": "Unlicense",
   "bugs": {
-    "url": "https://github.com/Caesarovich/ts-turtle/issues"
+    "url": "https://github.com/Caesarovich/turtle-ts/issues"
   },
-  "homepage": "https://github.com/Caesarovich/ts-turtle#readme",
+  "homepage": "https://github.com/Caesarovich/turtle-ts#readme",
   "devDependencies": {
     "@types/node": "^17.0.21",
     "canvas": "^2.9.0",
