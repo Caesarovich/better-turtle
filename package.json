@@ -1,5 +1,5 @@
 {
-  "name": "turtle-ts",
+  "name": "better-turtle",
   "version": "1.0.0",
   "description": "A TypeScript port of the famous Turtle JS project",
   "main": "index.js",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Caesarovich/turtle-ts.git"
+    "url": "git+https://github.com/Caesarovich/better-turtle.git"
   },
   "keywords": [
     "js-turtle",
@@ -25,9 +25,9 @@
   "author": "Caesarovich",
   "license": "Unlicense",
   "bugs": {
-    "url": "https://github.com/Caesarovich/turtle-ts/issues"
+    "url": "https://github.com/Caesarovich/better-turtle/issues"
   },
-  "homepage": "https://github.com/Caesarovich/turtle-ts#readme",
+  "homepage": "https://github.com/Caesarovich/better-turtle#readme",
   "devDependencies": {
     "@types/node": "^17.0.21",
     "canvas": "^2.9.0",

@@ -1,33 +1,34 @@
-# turtle-ts
+# better-turtle
 
 A TypeScript port of the famous Turtle JS project.
 
-## 🐢 What are turtle-ts / js-turtle ?
+## 🐢 What is BetterTurtle ?
 
 Turtle JS is a **graphic library** based on the [LOGO](<https://en.wikipedia.org/wiki/Logo_(programming_language)>) programming language aimed towards education.
 It allows JavaScript beginners to handle programming in a very graphic way,
 **every action is rendered visually**,
 making it easy to understand the principles of programming.
+BetterTurtle is an improved version of the many existing ones into TypeScript.
 
 ## 📥 Installation
 
 ### Option 1 - Install from NPM
 
 ```sh
-npm install --save turtle-ts
+npm install --save better-turtle
 ```
 
 ### Option 2 - Clone and build from source
 
 ```sh
 # Clone the repo in your project directory
-git clone https://github.com/Caesarovich/turtle-ts
+git clone https://github.com/Caesarovich/better-turtle
 
 # Build the library
-cd "turtle-ts" && npm run build && cd ../
+cd "better-turtle" && npm run build && cd ../
 
 # Then install it to your project
-npm install turtle-ts
+npm install better-turtle
 ```
 
 ## ⌛ Quickstart
@@ -49,7 +50,7 @@ tur.goto(-350, 0).forward(60).left(50).forward(300);
 
 ```js
 import { createCanvas } from 'canvas';
-import { Turtle } from 'turtle-ts';
+import { Turtle } from 'better-turtle';
 
 const canvas = createCanvas(400, 400);
 const ctx = canvas.getContext('2d');

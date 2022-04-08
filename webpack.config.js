@@ -6,7 +6,7 @@ module.exports = {
   output: {
     filename: '[name].min.js',
     path: path.resolve(__dirname, 'dist'),
-    library: 'turtlets',
+    library: 'BetterTurtle',
     libraryTarget: 'umd',
     umdNamedDefine: true,
     auxiliaryComment: 'Turtle JS redefined',
