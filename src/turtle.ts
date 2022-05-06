@@ -35,9 +35,11 @@ export enum StepType {
   PenUp,
   PenDown,
   Reset,
+  Clear,
   Goto,
   SetColor,
   SetWidth,
+  SetShape,
 }
 
 type Step =
@@ -77,12 +79,19 @@ type Step =
       type: StepType.Reset;
     }
   | {
+      type: StepType.Clear;
+    }
+  | {
       type: StepType.SetWidth;
       args: [number];
     }
   | {
       type: StepType.SetColor;
       args: [ColorResolvable];
+    }
+  | {
+      type: StepType.SetShape;
+      args: [Vertex2D[]];
     };
 
 /**
@@ -95,15 +104,18 @@ export interface ExposeRemap {
   forward?: string;
   left?: string;
   right?: string;
-  setAngle?: string;
   hide?: string;
   show?: string;
   putPenUp?: string;
   putPenDown?: string;
+  clear?: string;
   reset?: string;
   goto?: string;
+  setAngle?: string;
   setColor?: string;
   setWidth?: string;
+  setSpeed?: string;
+  setShape?: string;
 }
 
 /**
@@ -705,9 +717,11 @@ export class Turtle {
     obj[remap?.putPenUp ?? 'putPenUp'] = this.putPenUp.bind(this);
     obj[remap?.putPenDown ?? 'putPenDown'] = this.putPenDown.bind(this);
     obj[remap?.reset ?? 'reset'] = this.reset.bind(this);
+    obj[remap?.clear ?? 'clear'] = this.clear.bind(this);
     obj[remap?.goto ?? 'goto'] = this.goto.bind(this);
     obj[remap?.setColor ?? 'setColor'] = this.setColor.bind(this);
     obj[remap?.setWidth ?? 'setWidth'] = this.setWidth.bind(this);
+    obj[remap?.setShape ?? 'setShape'] = this.setShape.bind(this);
     return this;
   }
 
