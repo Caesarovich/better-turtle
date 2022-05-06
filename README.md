@@ -2,6 +2,8 @@
 
 A TypeScript port of the famous Turtle JS project.
 
+#### 📔 Complete documentation -> [**Here**](https://caesarovich.github.io/better-turtle/)
+
 ## 🐢 What is BetterTurtle ?
 
 Turtle JS is a **graphic library** based on the [LOGO](<https://en.wikipedia.org/wiki/Logo_(programming_language)>) programming language aimed towards education.
@@ -12,23 +14,36 @@ BetterTurtle is an improved version of the many existing ones into TypeScript.
 
 ## 📥 Installation
 
-### Option 1 - Install from NPM
+### Option 1 - Include in a HTML script tag
+
+You can directly include a **minified** (_No IntelliSense_) version of the code into your HTML page.
+
+```html
+<script src="https://github.com/Caesarovich/better-turtle/releases/download/npm-release/main.min.js"></script>
+```
+
+### Option 2 - Install from NPM
 
 ```sh
 npm install --save better-turtle
 ```
 
-### Option 2 - Clone and build from source
+### Option 3 - Clone and build from source
 
 ```sh
 # Clone the repo in your project directory
 git clone https://github.com/Caesarovich/better-turtle
 
 # Build the library
-cd "better-turtle" && npm run build && cd ../
+cd "better-turtle" && npm i && npm run build
 
 # Then install it to your project
-npm install better-turtle
+
+## 1 - Browser
+npm exec webpack && mv dist/main.min.js ../turtle.min.js
+
+## 2 - NPM
+cd ../ && npm install better-turtle
 ```
 
 ## ⌛ Quickstart
@@ -36,12 +51,14 @@ npm install better-turtle
 ### In browser
 
 ```js
+const { Turtle } = BetterTurtle;
+
 // Get an HTML Canvas element
 const canvas = document.getElementById('my-canvas-element-id');
 const ctx = canvas.getContext('2d');
 
 // Instanciate a new Turtle
-const tur = new turtlets.Turtle(ctx);
+const tur = new Turtle(ctx);
 
 tur.goto(-350, 0).forward(60).left(50).forward(300);
 ```

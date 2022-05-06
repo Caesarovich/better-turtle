@@ -15,5 +15,5 @@
     "noUncheckedIndexedAccess": true,
     "noUnusedParameters": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "examples/*"]
 }

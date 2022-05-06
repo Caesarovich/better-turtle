@@ -3,6 +3,7 @@ docs
 
 # Ignore Typescript source
 src
+examples
 
 # Ignore config files
 *.config.*
