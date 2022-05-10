@@ -17,6 +17,10 @@ const turtle = new Turtle(ctx as CanvasRenderingContext2D);
 
 turtle.hide().setColor('red').setWidth(3);
 
+turtle.on('goto', () => {
+  console.log('goto');
+});
+
 // Draw circle
 
 turtle.goto(-100, 0);
