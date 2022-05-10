@@ -40,6 +40,7 @@ export enum StepType {
   SetColor,
   SetWidth,
   SetShape,
+  SetSpeed,
 }
 
 type Step =
@@ -83,6 +84,10 @@ type Step =
     }
   | {
       type: StepType.SetWidth;
+      args: [number];
+    }
+  | {
+      type: StepType.SetSpeed;
       args: [number];
     }
   | {
@@ -722,6 +727,7 @@ export class Turtle {
     obj[remap?.setColor ?? 'setColor'] = this.setColor.bind(this);
     obj[remap?.setWidth ?? 'setWidth'] = this.setWidth.bind(this);
     obj[remap?.setShape ?? 'setShape'] = this.setShape.bind(this);
+    obj[remap?.setSpeed ?? 'setSpeed'] = this.setSpeed.bind(this);
     return this;
   }
 
