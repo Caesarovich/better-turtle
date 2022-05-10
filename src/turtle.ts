@@ -7,6 +7,7 @@ import {
   BuiltInShapes,
   resizeShape,
 } from './shapes';
+import { TurtleEvents, StepType, Step } from './steps';
 
 /**
  * Clears a canvas.
@@ -22,83 +23,6 @@ function centerCoordinates(ctx: CanvasRenderingContext2D): void {
   ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
   ctx.transform(1, 0, 0, -1, 0, 0);
 }
-
-/**
- * The different types of steps the turtle is making.
- */
-export enum StepType {
-  Forward,
-  Left,
-  Right,
-  SetAngle,
-  Hide,
-  Show,
-  PenUp,
-  PenDown,
-  Reset,
-  Clear,
-  Goto,
-  SetColor,
-  SetWidth,
-  SetShape,
-  SetSpeed,
-}
-
-type Step =
-  | {
-      type: StepType.Forward;
-      args: [number];
-    }
-  | {
-      type: StepType.Hide;
-    }
-  | {
-      type: StepType.Show;
-    }
-  | {
-      type: StepType.Left;
-      args: [number];
-    }
-  | {
-      type: StepType.Right;
-      args: [number];
-    }
-  | {
-      type: StepType.Goto;
-      args: [number, number];
-    }
-  | {
-      type: StepType.SetAngle;
-      args: [number];
-    }
-  | {
-      type: StepType.PenDown;
-    }
-  | {
-      type: StepType.PenUp;
-    }
-  | {
-      type: StepType.Reset;
-    }
-  | {
-      type: StepType.Clear;
-    }
-  | {
-      type: StepType.SetWidth;
-      args: [number];
-    }
-  | {
-      type: StepType.SetSpeed;
-      args: [number];
-    }
-  | {
-      type: StepType.SetColor;
-      args: [ColorResolvable];
-    }
-  | {
-      type: StepType.SetShape;
-      args: [Vertex2D[]];
-    };
 
 /**
  * Represents a remapping of method's names when exposing them onto a JavaScript object.
@@ -177,25 +101,6 @@ export interface TurtleOptions {
    * @default BuiltInShapes.Default
    */
   shape?: Vertex2D[];
-}
-
-interface TurtleEvents {
-  step: (step: Step) => void;
-  clear: () => void;
-  hide: () => void;
-  show: () => void;
-  reset: () => void;
-  setShape: (shape: Vertex2D[]) => void;
-  setSpeed: (ms: number) => void;
-  putPenUp: () => void;
-  putPenDown: () => void;
-  setColor: (color: ColorResolvable) => void;
-  setWidth: (width: number) => void;
-  setAngle: (angle: number) => void;
-  left: (angle: number) => void;
-  right: (angle: number) => void;
-  goto: (x: number, y: number) => void;
-  forward: (distance: number) => void;
 }
 
 export interface Turtle {
