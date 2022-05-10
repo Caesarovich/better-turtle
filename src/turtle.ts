@@ -1,3 +1,4 @@
+import { EventEmitter } from 'events';
 import { Color, ColorResolvable, convertToColor } from './colors';
 import {
   Vertex2D,
@@ -178,10 +179,37 @@ export interface TurtleOptions {
   shape?: Vertex2D[];
 }
 
+interface TurtleEvents {
+  step: (step: Step) => void;
+  clear: () => void;
+  hide: () => void;
+  show: () => void;
+  reset: () => void;
+  setShape: (shape: Vertex2D[]) => void;
+  setSpeed: (ms: number) => void;
+  putPenUp: () => void;
+  putPenDown: () => void;
+  setColor: (color: ColorResolvable) => void;
+  setWidth: (width: number) => void;
+  setAngle: (angle: number) => void;
+  left: (angle: number) => void;
+  right: (angle: number) => void;
+  goto: (x: number, y: number) => void;
+  forward: (distance: number) => void;
+}
+
+export interface Turtle {
+  on<U extends keyof TurtleEvents>(event: U, listener: TurtleEvents[U]): this;
+  emit<U extends keyof TurtleEvents>(
+    event: U,
+    ...args: Parameters<TurtleEvents[U]>
+  ): boolean;
+}
+
 /**
  * A Turtle to draw on a canvas.
  */
-export class Turtle {
+export class Turtle extends EventEmitter {
   /**
    * The turtle's Canvas 2D context.
    */
@@ -279,6 +307,7 @@ export class Turtle {
    */
   private doStep(step: Step): Turtle {
     // TODO: Make this correctly
+    this.emit('step', step);
     if (step.type === StepType.Goto) this.goto(...step.args);
     if (step.type === StepType.SetAngle) this.setAngle(...step.args);
     if (step.type === StepType.Forward) this.forward(...step.args);
@@ -289,8 +318,11 @@ export class Turtle {
     if (step.type === StepType.PenDown) this.putPenDown();
     if (step.type === StepType.PenUp) this.putPenUp();
     if (step.type === StepType.Reset) this.reset();
+    if (step.type === StepType.Clear) this.clear();
     if (step.type === StepType.SetColor) this.setColor(...step.args);
     if (step.type === StepType.SetWidth) this.setWidth(...step.args);
+    if (step.type === StepType.SetSpeed) this.setSpeed(...step.args);
+    if (step.type === StepType.SetShape) this.setShape(...step.args);
 
     return this;
   }
@@ -320,8 +352,12 @@ export class Turtle {
    * @returns {Turtle} For method chaining.
    */
   clear(): Turtle {
-    clearContext(this.ctx);
-    this.draw();
+    if (this.inStep) {
+      this.emit('clear');
+      clearContext(this.ctx);
+      this.draw();
+    } else this.steps.push({ type: StepType.Clear });
+
     return this;
   }
 
@@ -332,6 +368,7 @@ export class Turtle {
    */
   hide(): Turtle {
     if (this.inStep) {
+      this.emit('hide');
       this.hidden = true;
       this.restoreImageData();
       this.draw();
@@ -346,6 +383,7 @@ export class Turtle {
    */
   show(): Turtle {
     if (this.inStep) {
+      this.emit('show');
       this.hidden = false;
       this.draw();
     } else this.steps.push({ type: StepType.Show });
@@ -359,6 +397,7 @@ export class Turtle {
    */
   reset(): Turtle {
     if (this.inStep) {
+      this.emit('reset');
       this.hidden = false;
       this.wrap = true;
       this.penDown = true;
@@ -379,8 +418,11 @@ export class Turtle {
    * @returns {Turtle} For method chaining.
    */
   setShape(shape: Vertex2D[]): Turtle {
-    this.shape = shape;
-    this.draw();
+    if (this.inStep) {
+      this.emit('setShape', shape);
+      this.shape = shape;
+      this.draw();
+    } else this.steps.push({ type: StepType.SetShape, args: [shape] });
     return this;
   }
 
@@ -391,13 +433,15 @@ export class Turtle {
    * @returns {Turtle} For method chaining.
    */
   setSpeed(ms: number): Turtle {
-    this.stepByStep = ms > 0;
-    this.speed = ms;
+    if (this.inStep) {
+      this.emit('setSpeed', ms);
+      this.stepByStep = ms > 0;
+      this.speed = ms;
 
-    if (this.interval) clearInterval(this.interval);
+      if (this.interval) clearInterval(this.interval);
 
-    this.interval = setInterval(this.nextStep.bind(this), ms);
-
+      this.interval = setInterval(this.nextStep.bind(this), ms);
+    } else this.steps.push({ type: StepType.SetSpeed, args: [ms] });
     return this;
   }
 
@@ -408,6 +452,7 @@ export class Turtle {
    */
   putPenUp(): Turtle {
     if (this.inStep) {
+      this.emit('putPenUp');
       this.penDown = false;
     } else this.steps.push({ type: StepType.PenUp });
     return this;
@@ -420,6 +465,7 @@ export class Turtle {
    */
   putPenDown(): Turtle {
     if (this.inStep) {
+      this.emit('putPenDown');
       this.penDown = true;
     } else this.steps.push({ type: StepType.PenDown });
     return this;
@@ -442,13 +488,12 @@ export class Turtle {
    * @returns {Turtle} For method chaining.
    */
   setColor(col: ColorResolvable): Turtle {
-    if (!this.inStep) {
-      this.steps.push({ type: StepType.SetColor, args: [col] });
-    } else {
+    if (this.inStep) {
+      this.emit('setColor', col);
       this.color = convertToColor(col);
-    }
-    this.restoreImageData();
-    this.draw();
+      this.restoreImageData();
+      this.draw();
+    } else this.steps.push({ type: StepType.SetColor, args: [col] });
     return this;
   }
 
@@ -458,13 +503,12 @@ export class Turtle {
    * @returns {Turtle} For method chaining.
    */
   setWidth(size: number): Turtle {
-    if (!this.inStep) {
-      this.steps.push({ type: StepType.SetWidth, args: [size] });
-    } else {
+    if (this.inStep) {
+      this.emit('setWidth', size);
       this.width = size;
       this.restoreImageData();
       this.draw();
-    }
+    } else this.steps.push({ type: StepType.SetWidth, args: [size] });
     return this;
   }
 
@@ -475,6 +519,7 @@ export class Turtle {
    */
   setAngle(ang: number): Turtle {
     if (this.inStep) {
+      this.emit('setAngle', ang);
       this.angle = ang;
       this.restoreImageData();
       this.draw();
@@ -489,6 +534,7 @@ export class Turtle {
    */
   left(ang: number): Turtle {
     if (this.inStep) {
+      this.emit('left', ang);
       this.angle -= ang;
       this.restoreImageData();
       this.draw();
@@ -503,6 +549,7 @@ export class Turtle {
    */
   right(ang: number): Turtle {
     if (this.inStep) {
+      this.emit('right', ang);
       this.angle += ang;
       this.restoreImageData();
       this.draw();
@@ -517,6 +564,7 @@ export class Turtle {
    */
   goto(x: number, y: number): Turtle {
     if (this.inStep) {
+      this.emit('goto', x, y);
       this.position.x = x;
       this.position.y = y;
       this.restoreImageData();
@@ -604,6 +652,7 @@ export class Turtle {
       return this;
     }
 
+    this.emit('forward', distance);
     this.restoreImageData();
     this.ctx.save();
     centerCoordinates(this.ctx);
@@ -732,6 +781,7 @@ export class Turtle {
   }
 
   constructor(context: CanvasRenderingContext2D, options?: TurtleOptions) {
+    super();
     this.ctx = context;
 
     if (options?.hidden) this.hidden = options.hidden;
