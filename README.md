@@ -96,3 +96,19 @@ setColor('red');
 forward(150);
 hide();
 ```
+
+## ⏲️ Events
+
+The Turtle class **extends** the [EventEmitter](https://nodejs.dev/learn/the-nodejs-event-emitter) Class. Allowing you to listen to events such as `'step'` or `'forward'` when the turtle is in [StepByStep](https://caesarovich.github.io/better-turtle/classes/Turtle.html#stepByStep) Mode.
+
+```js
+const turtle = new Turtle(ctx);
+
+turtle.on('step', (step) => {
+  console.log(`The turtle has done an action: ${step}`);
+});
+
+turtle.forward(120).left(90).forward(30).right(90);
+```
+
+In this exemple, every action will be logged in the console.
