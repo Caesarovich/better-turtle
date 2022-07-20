@@ -100,9 +100,9 @@ export function convertToColor(col: ColorResolvable): Color {
   let rgb: [number, number, number] = [0, 0, 0];
 
   if (Array.isArray(col)) {
-    rgb[0] ??= col[0];
-    rgb[1] ??= col[1];
-    rgb[2] ??= col[2];
+    rgb[0] = col[0];
+    rgb[1] = col[1];
+    rgb[2] = col[2];
   } else {
     col.replace(/ /g, '');
     col.toLowerCase();
@@ -122,7 +122,7 @@ export function convertToColor(col: ColorResolvable): Color {
 
   rgb[0] = rgb[0] < 0 ? 0 : rgb[0] > 255 ? 255 : rgb[0];
   rgb[1] = rgb[1] < 0 ? 0 : rgb[1] > 255 ? 255 : rgb[1];
-  rgb[1] = rgb[1] < 0 ? 0 : rgb[1] > 255 ? 255 : rgb[1];
+  rgb[2] = rgb[2] < 0 ? 0 : rgb[2] > 255 ? 255 : rgb[2];
 
   return new Color(rgb);
 }
