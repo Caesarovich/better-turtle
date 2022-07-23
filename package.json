@@ -1,6 +1,6 @@
 {
   "name": "better-turtle",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A TypeScript port of the famous Turtle JS project",
   "main": "index.js",
   "scripts": {
