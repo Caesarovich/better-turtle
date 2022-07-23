@@ -1,4 +1,4 @@
-export * from './turtle';
-export * as Colors from './colors';
-export * as Shapes from './shapes';
-export * as Steps from './steps';
+export { Turtle, TurtleOptions, ExposeRemap } from './turtle';
+export { Color, ColorResolvable } from './colors';
+export { Vertex2D, BuiltInShapes } from './shapes';
+export { Step, StepType, TurtleEvents } from './steps';
