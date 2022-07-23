@@ -28,6 +28,8 @@ function centerCoordinates(ctx: CanvasRenderingContext2D): void {
  * The different styles of the end caps for drawn lines.
  *
  * @note The value "round" and "square" make the lines slightly longer.
+ *
+ * @see https://www.w3schools.com/TAgs/canvas_linecap.asp
  */
 export type LineCap = 'butt' | 'round' | 'square';
 

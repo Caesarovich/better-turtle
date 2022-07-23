@@ -88,7 +88,14 @@ export class Color {
 export function isHTMLColorName(col: string): col is HTMLColorName {
   return hex(col as HTMLColorName) != null;
 }
-
+/**
+ * A value that can be resolved into a Color instance.
+ *
+ * - It can be a **Color** instance itself
+ * - An HTML color name as a string (https://www.w3schools.com/colors/colors_names.asp/)
+ * - An **array of three integers** representing RGB values
+ * - An **hexadecimal string** representation of the RGB value (eg. '#FF15DE')
+ */
 export type ColorResolvable =
   | Color
   | HTMLColorName
