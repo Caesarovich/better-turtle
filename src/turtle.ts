@@ -25,6 +25,13 @@ function centerCoordinates(ctx: CanvasRenderingContext2D): void {
 }
 
 /**
+ * The different styles of the end caps for drawn lines.
+ *
+ * @note The value "round" and "square" make the lines slightly longer.
+ */
+export type LineCap = 'butt' | 'round' | 'square';
+
+/**
  * Represents a remapping of method's names when exposing them onto a JavaScript object.
  *
  * @see {@link Turtle.expose}
@@ -46,6 +53,7 @@ export interface ExposeRemap {
   setWidth?: string;
   setSpeed?: string;
   setShape?: string;
+  setLineCap?: string;
 }
 
 /**
@@ -101,6 +109,13 @@ export interface TurtleOptions {
    * @default BuiltInShapes.Default
    */
   shape?: Vertex2D[];
+
+  /**
+   * The default lineCap value.
+   *
+   * @default 'round'
+   */
+  lineCap?: LineCap;
 }
 
 export interface Turtle {
@@ -179,6 +194,14 @@ export class Turtle extends EventEmitter {
   private width: number = 1;
 
   /**
+   * The current lineCap value of the Canvas.
+   */
+
+  private set lineCap(cap: LineCap) {
+    this.ctx.lineCap = cap;
+  }
+
+  /**
    * Wether or not the turtle is doing a step.
    */
   private get inStep(): boolean {
@@ -211,7 +234,6 @@ export class Turtle extends EventEmitter {
    * @returns {Turtle} For method chaining.
    */
   private doStep(step: Step): Turtle {
-    // TODO: Make this correctly
     this.emit('step', step);
     if (step.type === StepType.Goto) this.goto(...step.args);
     if (step.type === StepType.SetAngle) this.setAngle(...step.args);
@@ -228,6 +250,7 @@ export class Turtle extends EventEmitter {
     if (step.type === StepType.SetWidth) this.setWidth(...step.args);
     if (step.type === StepType.SetSpeed) this.setSpeed(...step.args);
     if (step.type === StepType.SetShape) this.setShape(...step.args);
+    if (step.type === StepType.SetLineCap) this.setLineCap(...step.args);
 
     return this;
   }
@@ -414,6 +437,19 @@ export class Turtle extends EventEmitter {
       this.restoreImageData();
       this.draw();
     } else this.steps.push({ type: StepType.SetWidth, args: [size] });
+    return this;
+  }
+
+  /**
+   * Change the line cap style of the lines being drawn.
+   *
+   * @returns {Turtle} For method chaining.
+   */
+  setLineCap(cap: LineCap): Turtle {
+    if (this.inStep) {
+      this.emit('setLineCap', cap);
+      this.lineCap = cap;
+    } else this.steps.push({ type: StepType.SetLineCap, args: [cap] });
     return this;
   }
 
@@ -682,12 +718,14 @@ export class Turtle extends EventEmitter {
     obj[remap?.setWidth ?? 'setWidth'] = this.setWidth.bind(this);
     obj[remap?.setShape ?? 'setShape'] = this.setShape.bind(this);
     obj[remap?.setSpeed ?? 'setSpeed'] = this.setSpeed.bind(this);
+    obj[remap?.setLineCap ?? 'setLineCap'] = this.setLineCap.bind(this);
     return this;
   }
 
   constructor(context: CanvasRenderingContext2D, options?: TurtleOptions) {
     super();
     this.ctx = context;
+    this.lineCap = 'round';
 
     if (options?.hidden) this.hidden = options.hidden;
     if (options?.disableWrapping) this.wrap = !options.disableWrapping;
@@ -697,7 +735,7 @@ export class Turtle extends EventEmitter {
     if (options?.startPostition) this.position = options.startPostition;
     if (options?.startAngle) this.angle = options.startAngle;
     if (options?.shape) this.shape = options.shape;
-
-    this.draw();
+    if (options?.lineCap) this.lineCap = options.lineCap;
+    console.log(this.lineCap);
   }
 }

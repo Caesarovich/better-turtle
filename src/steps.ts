@@ -1,5 +1,6 @@
 import { ColorResolvable } from './colors';
 import { Vertex2D } from './shapes';
+import { LineCap } from './turtle';
 
 /**
  * The different types of steps the turtle is making.
@@ -20,6 +21,7 @@ export enum StepType {
   SetWidth,
   SetShape,
   SetSpeed,
+  SetLineCap,
 }
 
 export type Step =
@@ -76,6 +78,10 @@ export type Step =
   | {
       type: StepType.SetShape;
       args: [Vertex2D[]];
+    }
+  | {
+      type: StepType.SetLineCap;
+      args: [LineCap];
     };
 
 export interface TurtleEvents {
@@ -95,6 +101,7 @@ export interface TurtleEvents {
   putPenDown: () => void;
   setColor: (color: ColorResolvable) => void;
   setWidth: (width: number) => void;
+  setLineCap: (cap: LineCap) => void;
   setAngle: (angle: number) => void;
   left: (angle: number) => void;
   right: (angle: number) => void;
