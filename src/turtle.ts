@@ -738,6 +738,5 @@ export class Turtle extends EventEmitter {
     if (options?.startAngle) this.angle = options.startAngle;
     if (options?.shape) this.shape = options.shape;
     if (options?.lineCap) this.lineCap = options.lineCap;
-    console.log(this.lineCap);
   }
 }
