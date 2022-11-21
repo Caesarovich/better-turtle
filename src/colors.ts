@@ -112,8 +112,7 @@ export function convertToColor(col: ColorResolvable): Color {
     rgb[1] ??= 0;
     rgb[2] ??= 0;
   } else {
-    col.replace(/ /g, '');
-    col.toLowerCase();
+    col = col.trim().toLowerCase();
     if (hex(col as HTMLColorName)) col = hex(col as HTMLColorName) as string;
     if (col[0] == '#') col = col.slice(1, 7);
 
