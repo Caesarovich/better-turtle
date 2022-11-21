@@ -53,7 +53,7 @@ export interface ExposeRemap {
   setAngle?: string;
   setColor?: string;
   setWidth?: string;
-  setSpeed?: string;
+  setDelay?: string;
   setShape?: string;
   setLineCap?: string;
 }
@@ -160,7 +160,7 @@ export class Turtle extends EventEmitter {
 
   /**
    * Wether or not the Turtle is in Step by Step mode.
-   * Enabled using {@link Turtle.setSpeed}.
+   * Enabled using {@link Turtle.setDelay}.
    */
   private stepByStep: boolean = false;
 
@@ -250,7 +250,7 @@ export class Turtle extends EventEmitter {
     if (step.type === StepType.Clear) this.clear();
     if (step.type === StepType.SetColor) this.setColor(...step.args);
     if (step.type === StepType.SetWidth) this.setWidth(...step.args);
-    if (step.type === StepType.SetSpeed) this.setSpeed(...step.args);
+    if (step.type === StepType.SetDelay) this.setDelay(...step.args);
     if (step.type === StepType.SetShape) this.setShape(...step.args);
     if (step.type === StepType.SetLineCap) this.setLineCap(...step.args);
 
@@ -357,21 +357,28 @@ export class Turtle extends EventEmitter {
   }
 
   /**
+   * @deprecated Use {@link Turtle.setDelay} instead.
+   */
+  setSpeed(ms: number): Turtle {
+    return this.setDelay(ms);
+  }
+
+  /**
    * Enable Step by Step mode and set the delay in ms between each steps.
    *
    * @param ms The delay between each steps
    * @returns {Turtle} For method chaining.
    */
-  setSpeed(ms: number): Turtle {
+  setDelay(ms: number): Turtle {
     if (this.inStep) {
-      this.emit('setSpeed', ms);
+      this.emit('setDelay', ms);
       this.stepByStep = ms > 0;
       this.speed = ms;
 
       if (this.interval) clearInterval(this.interval);
 
       this.interval = setInterval(this.nextStep.bind(this), ms);
-    } else this.steps.push({ type: StepType.SetSpeed, args: [ms] });
+    } else this.steps.push({ type: StepType.SetDelay, args: [ms] });
     return this;
   }
 
@@ -719,7 +726,7 @@ export class Turtle extends EventEmitter {
     obj[remap?.setColor ?? 'setColor'] = this.setColor.bind(this);
     obj[remap?.setWidth ?? 'setWidth'] = this.setWidth.bind(this);
     obj[remap?.setShape ?? 'setShape'] = this.setShape.bind(this);
-    obj[remap?.setSpeed ?? 'setSpeed'] = this.setSpeed.bind(this);
+    obj[remap?.setDelay ?? 'setDelay'] = this.setDelay.bind(this);
     obj[remap?.setLineCap ?? 'setLineCap'] = this.setLineCap.bind(this);
     return this;
   }

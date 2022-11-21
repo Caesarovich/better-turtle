@@ -20,7 +20,7 @@ export enum StepType {
   SetColor,
   SetWidth,
   SetShape,
-  SetSpeed,
+  SetDelay,
   SetLineCap,
 }
 
@@ -68,7 +68,7 @@ export type Step =
       args: [number];
     }
   | {
-      type: StepType.SetSpeed;
+      type: StepType.SetDelay;
       args: [number];
     }
   | {
@@ -96,7 +96,7 @@ export interface TurtleEvents {
   show: () => void;
   reset: () => void;
   setShape: (shape: Vertex2D[]) => void;
-  setSpeed: (ms: number) => void;
+  setDelay: (ms: number) => void;
   putPenUp: () => void;
   putPenDown: () => void;
   setColor: (color: ColorResolvable) => void;
