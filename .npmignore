@@ -1,9 +1,8 @@
 # Ignore documentation
-docs
+/docs
 
-# Ignore Typescript source
-src
-examples
+# Ignore examples
+/examples
 
 # Ignore config files
 *.config.*
