@@ -6,6 +6,8 @@
 
 # Ignore config files
 *.config.*
+/tsconfig.json
+/typedoc.json
 
 # Ignore .min files
 *.min.*
