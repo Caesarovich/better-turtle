@@ -130,6 +130,35 @@ export interface Turtle {
 
 /**
  * A Turtle to draw on a canvas.
+ * 
+ * @example
+ * ```ts
+    // Instanciate a new Turtle
+    const turtle = new Turtle(ctx as CanvasRenderingContext2D, {
+      width: 6,
+    });
+
+    // Draw square
+    for (let i = 0; i < 4; i++) turtle.forward(100).right(90);
+
+    // Draw triangle
+    turtle.goto(-100, 50).setAngle(-90).setColor('green');
+
+    for (let i = 0; i < 4; i++) {
+      turtle.forward(80).right(120);
+    }
+
+    // Draw pentagone
+    turtle.goto(0, -100).setAngle(-90).setColor('blue');
+
+    for (let i = 0; i < 5; i++) {
+      turtle.forward(60).left(360 / 5);
+    }
+
+    //
+    turtle.hide();
+ * ```
+ * ![Turtle drawing](https://caesarovich.github.io/better-turtle/media/drawing-polygons.png)
  */
 export class Turtle extends EventEmitter {
   /**
@@ -295,6 +324,14 @@ export class Turtle extends EventEmitter {
    * Hide the turtle.
    *
    * @returns {Turtle} For method chaining.
+   * 
+   * @example
+   *```ts
+    turtle.hide();
+
+    turtle.show();
+   * ```
+   * ![Hide-Show illustration](https://caesarovich.github.io/better-turtle/media/hide-show.gif)
    */
   hide(): Turtle {
     if (this.inStep) {
@@ -310,6 +347,14 @@ export class Turtle extends EventEmitter {
    * Show the turtle.
    *
    * @returns {Turtle} For method chaining.
+   * 
+   * @example
+   *```ts
+    turtle.hide();
+
+    turtle.show();
+   * ```
+   * ![Hide-Show illustration](https://caesarovich.github.io/better-turtle/media/hide-show.gif)
    */
   show(): Turtle {
     if (this.inStep) {
@@ -386,6 +431,20 @@ export class Turtle extends EventEmitter {
    * Puts the pen up to stop drawing.
    *
    * @returns {Turtle} For method chaining.
+   * 
+   * @example
+   * ```ts
+    turtle.forward(100);
+
+    turtle.putPenUp();
+
+    turtle.forward(100);
+
+    turtle.putPenDown();
+
+    turtle.forward(100);
+   * ```
+   * ![Pen Up-Down illustration](https://caesarovich.github.io/better-turtle/media/pen-up-down.gif)
    */
   putPenUp(): Turtle {
     if (this.inStep) {
@@ -399,6 +458,20 @@ export class Turtle extends EventEmitter {
    * Puts the pen down to start drawing.
    *
    * @returns {Turtle} For method chaining.
+   * 
+   * @example
+   * ```ts
+    turtle.forward(100);
+
+    turtle.putPenUp();
+
+    turtle.forward(100);
+
+    turtle.putPenDown();
+
+    turtle.forward(100);
+   * ```
+   * ![Pen Up-Down illustration](https://caesarovich.github.io/better-turtle/media/pen-up-down.gif)
    */
   putPenDown(): Turtle {
     if (this.inStep) {
@@ -438,6 +511,20 @@ export class Turtle extends EventEmitter {
    * Sets a new width to be used for drawing lines.
    *
    * @returns {Turtle} For method chaining.
+   * 
+   * @example
+   * ```ts
+    turtle.setWidth(2).goto(-100, -50).forward(100);
+
+    turtle.setWidth(4).goto(-50, -50).forward(100);
+
+    turtle.setWidth(8).goto(0, -50).forward(100);
+
+    turtle.setWidth(16).goto(50, -50).forward(100);
+
+    turtle.setWidth(32).goto(100, -50).forward(100);
+   * ```
+   * ![Width illustration](https://caesarovich.github.io/better-turtle/media/width.gif)
    */
   setWidth(size: number): Turtle {
     if (this.inStep) {
@@ -453,6 +540,18 @@ export class Turtle extends EventEmitter {
    * Change the line cap style of the lines being drawn.
    *
    * @returns {Turtle} For method chaining.
+   * 
+   * @see {@link LineCap}
+   * 
+   * @example
+   * ```ts
+    turtle.setLineCap('butt').goto(-50, -50).forward(100);
+
+    turtle.setLineCap('square').goto(0, -50).forward(100);
+
+    turtle.setLineCap('round').goto(50, -50).forward(100);
+   * ```
+   * ![Pen Up-Down illustration](https://caesarovich.github.io/better-turtle/media/line-cap.png)
    */
   setLineCap(cap: LineCap): Turtle {
     if (this.inStep) {
@@ -466,6 +565,14 @@ export class Turtle extends EventEmitter {
    * Set the turtle to this angle.
    *
    * @returns {Turtle} For method chaining.
+   * 
+   * @example
+   * ```ts
+    for (let i = 0; i < 360; i += 15) {
+      turtle.setAngle(i);
+    }
+   * ```
+   * ![Set Angle illustration](https://caesarovich.github.io/better-turtle/media/angle.gif)
    */
   setAngle(ang: number): Turtle {
     if (this.inStep) {
@@ -481,6 +588,20 @@ export class Turtle extends EventEmitter {
    * Rotate the turtle on the left.
    *
    * @returns {Turtle} For method chaining.
+   * 
+   * @example
+   * ```ts
+    turtle.forward(100);
+
+    turtle.left(45);
+
+    turtle.forward(100);
+
+    turtle.left(45);
+
+    turtle.forward(100);
+   * ```
+   * ![Left illustration](https://caesarovich.github.io/better-turtle/media/left.gif)
    */
   left(ang: number): Turtle {
     if (this.inStep) {
@@ -496,6 +617,20 @@ export class Turtle extends EventEmitter {
    * Rotate the turtle on the right.
    *
    * @returns {Turtle} For method chaining.
+   * 
+   * @example
+   * ```ts
+    turtle.forward(100);
+
+    turtle.right(45);
+
+    turtle.forward(100);
+
+    turtle.right(45);
+
+    turtle.forward(100);
+   * ```
+   * ![Right illustration](https://caesarovich.github.io/better-turtle/media/right.gif)
    */
   right(ang: number): Turtle {
     if (this.inStep) {
@@ -511,6 +646,20 @@ export class Turtle extends EventEmitter {
    * Sends the turtle at a new position.
    *
    * @returns {Turtle} For method chaining.
+   * 
+   * @example
+   * ```ts
+      turtle.goto(0, 0);
+
+      turtle.goto(0, -150);
+
+      turtle.goto(0, 150);
+
+      turtle.goto(150, 0);
+
+      turtle.goto(-150, 0);
+   * ```
+   * ![Goto illustration](https://caesarovich.github.io/better-turtle/media/goto.gif)
    */
   goto(x: number, y: number): Turtle {
     if (this.inStep) {
@@ -595,6 +744,16 @@ export class Turtle extends EventEmitter {
    *
    * @param distance The distance in pixels for the turtle to travel.
    * @returns {Turtle} For method chaining.
+   * 
+   * @example
+   * ```ts
+    turtle.goto(-50, -100).forward(50);
+
+    turtle.goto(0, -100).forward(100);
+
+    turtle.goto(50, -100).forward(150);
+   * ```
+   * ![Forward illustration](https://caesarovich.github.io/better-turtle/media/forward.gif)
    */
   forward(distance: number): Turtle {
     if (!this.inStep) {
@@ -667,6 +826,18 @@ export class Turtle extends EventEmitter {
    *
    * @param separations The number of separations on the grid.
    * @returns {Turtle} For method chaining.
+   * 
+   * @example
+   * ```ts
+    turtle.clear().drawGrid(2);
+    turtle.clear().drawGrid(3);
+    turtle.clear().drawGrid(4);
+    turtle.clear().drawGrid(5);
+    turtle.clear().drawGrid(6);
+    turtle.clear().drawGrid(7);
+    turtle.clear().drawGrid(8);
+   * ```
+   * ![Draw grid illustration](https://caesarovich.github.io/better-turtle/media/grid.gif)
    */
   drawGrid(separations: number): Turtle {
     // Make it minimum 2
