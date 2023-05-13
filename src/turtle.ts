@@ -1,13 +1,13 @@
-import { EventEmitter } from 'events';
-import { Color, ColorResolvable, convertToColor } from './colors';
+import { EventEmitter } from "events";
+import { Color, ColorResolvable, convertToColor } from "./colors";
 import {
   Vertex2D,
   rotateShape,
   degToRad,
   BuiltInShapes,
   resizeShape,
-} from './shapes';
-import { TurtleEvents, StepType, Step } from './steps';
+} from "./shapes";
+import { TurtleEvents, StepType, Step } from "./steps";
 
 /**
  * Clears a canvas.
@@ -31,7 +31,7 @@ function centerCoordinates(ctx: CanvasRenderingContext2D): void {
  *
  * @see https://www.w3schools.com/TAgs/canvas_linecap.asp
  */
-export type LineCap = 'butt' | 'round' | 'square';
+export type LineCap = "butt" | "round" | "square";
 
 /**
  * Represents a remapping of method's names when exposing them onto a JavaScript object.
@@ -265,7 +265,7 @@ export class Turtle extends EventEmitter {
    * @returns {Turtle} For method chaining.
    */
   private doStep(step: Step): Turtle {
-    this.emit('step', step);
+    this.emit("step", step);
     if (step.type === StepType.Goto) this.goto(...step.args);
     if (step.type === StepType.SetAngle) this.setAngle(...step.args);
     if (step.type === StepType.Forward) this.forward(...step.args);
@@ -312,7 +312,7 @@ export class Turtle extends EventEmitter {
    */
   clear(): Turtle {
     if (this.inStep) {
-      this.emit('clear');
+      this.emit("clear");
       clearContext(this.ctx);
       this.draw();
     } else this.steps.push({ type: StepType.Clear });
@@ -335,7 +335,7 @@ export class Turtle extends EventEmitter {
    */
   hide(): Turtle {
     if (this.inStep) {
-      this.emit('hide');
+      this.emit("hide");
       this.hidden = true;
       this.restoreImageData();
       this.draw();
@@ -358,7 +358,7 @@ export class Turtle extends EventEmitter {
    */
   show(): Turtle {
     if (this.inStep) {
-      this.emit('show');
+      this.emit("show");
       this.hidden = false;
       this.draw();
     } else this.steps.push({ type: StepType.Show });
@@ -372,7 +372,7 @@ export class Turtle extends EventEmitter {
    */
   reset(): Turtle {
     if (this.inStep) {
-      this.emit('reset');
+      this.emit("reset");
       this.hidden = false;
       this.wrap = true;
       this.penDown = true;
@@ -394,7 +394,7 @@ export class Turtle extends EventEmitter {
    */
   setShape(shape: Vertex2D[]): Turtle {
     if (this.inStep) {
-      this.emit('setShape', shape);
+      this.emit("setShape", shape);
       this.shape = shape;
       this.draw();
     } else this.steps.push({ type: StepType.SetShape, args: [shape] });
@@ -416,7 +416,7 @@ export class Turtle extends EventEmitter {
    */
   setDelay(ms: number): Turtle {
     if (this.inStep) {
-      this.emit('setDelay', ms);
+      this.emit("setDelay", ms);
       this.stepByStep = ms > 0;
       this.speed = ms;
 
@@ -448,7 +448,7 @@ export class Turtle extends EventEmitter {
    */
   putPenUp(): Turtle {
     if (this.inStep) {
-      this.emit('putPenUp');
+      this.emit("putPenUp");
       this.penDown = false;
     } else this.steps.push({ type: StepType.PenUp });
     return this;
@@ -475,7 +475,7 @@ export class Turtle extends EventEmitter {
    */
   putPenDown(): Turtle {
     if (this.inStep) {
-      this.emit('putPenDown');
+      this.emit("putPenDown");
       this.penDown = true;
     } else this.steps.push({ type: StepType.PenDown });
     return this;
@@ -497,13 +497,21 @@ export class Turtle extends EventEmitter {
    * @param col Any value resolvable to a color.
    * @returns {Turtle} For method chaining.
    */
-  setColor(col: ColorResolvable): Turtle {
+  setColor(red: number, green: number, blue: number): Turtle;
+  setColor(col: ColorResolvable): Turtle;
+  setColor(...colors: [number, number, number] | [ColorResolvable]): Turtle {
+    let color: ColorResolvable = [0, 0, 0];
+    if (colors.length === 3) {
+      color = colors;
+    } else {
+      color = colors[0];
+    }
     if (this.inStep) {
-      this.emit('setColor', col);
-      this.color = convertToColor(col);
+      this.emit("setColor", color);
+      this.color = convertToColor(color);
       this.restoreImageData();
       this.draw();
-    } else this.steps.push({ type: StepType.SetColor, args: [col] });
+    } else this.steps.push({ type: StepType.SetColor, args: [color] });
     return this;
   }
 
@@ -528,7 +536,7 @@ export class Turtle extends EventEmitter {
    */
   setWidth(size: number): Turtle {
     if (this.inStep) {
-      this.emit('setWidth', size);
+      this.emit("setWidth", size);
       this.width = size;
       this.restoreImageData();
       this.draw();
@@ -555,7 +563,7 @@ export class Turtle extends EventEmitter {
    */
   setLineCap(cap: LineCap): Turtle {
     if (this.inStep) {
-      this.emit('setLineCap', cap);
+      this.emit("setLineCap", cap);
       this.lineCap = cap;
     } else this.steps.push({ type: StepType.SetLineCap, args: [cap] });
     return this;
@@ -576,7 +584,7 @@ export class Turtle extends EventEmitter {
    */
   setAngle(ang: number): Turtle {
     if (this.inStep) {
-      this.emit('setAngle', ang);
+      this.emit("setAngle", ang);
       this.angle = ang;
       this.restoreImageData();
       this.draw();
@@ -605,7 +613,7 @@ export class Turtle extends EventEmitter {
    */
   left(ang: number): Turtle {
     if (this.inStep) {
-      this.emit('left', ang);
+      this.emit("left", ang);
       this.angle -= ang;
       this.restoreImageData();
       this.draw();
@@ -634,7 +642,7 @@ export class Turtle extends EventEmitter {
    */
   right(ang: number): Turtle {
     if (this.inStep) {
-      this.emit('right', ang);
+      this.emit("right", ang);
       this.angle += ang;
       this.restoreImageData();
       this.draw();
@@ -663,7 +671,7 @@ export class Turtle extends EventEmitter {
    */
   goto(x: number, y: number): Turtle {
     if (this.inStep) {
-      this.emit('goto', x, y);
+      this.emit("goto", x, y);
       this.position.x = x;
       this.position.y = y;
       this.restoreImageData();
@@ -707,7 +715,7 @@ export class Turtle extends EventEmitter {
     this.ctx.fillStyle = this.color.toHex();
     this.ctx.fill();
     this.ctx.lineWidth = Math.max(this.width / 4, 1);
-    this.ctx.strokeStyle = 'black';
+    this.ctx.strokeStyle = "black";
     this.ctx.stroke();
     this.ctx.restore();
     return this;
@@ -761,7 +769,7 @@ export class Turtle extends EventEmitter {
       return this;
     }
 
-    this.emit('forward', distance);
+    this.emit("forward", distance);
     this.restoreImageData();
     this.ctx.save();
     centerCoordinates(this.ctx);
@@ -852,7 +860,7 @@ export class Turtle extends EventEmitter {
     const w = this.ctx.canvas.width;
     const h = this.ctx.canvas.height;
 
-    this.setColor('grey');
+    this.setColor("grey");
     this.setWidth(2);
 
     for (let i = 1; i < separations; i++) {
@@ -883,29 +891,29 @@ export class Turtle extends EventEmitter {
    * @returns {Turtle} For method chaining.
    */
   expose(obj: any, remap?: ExposeRemap): Turtle {
-    obj[remap?.forward ?? 'forward'] = this.forward.bind(this);
-    obj[remap?.left ?? 'left'] = this.left.bind(this);
-    obj[remap?.right ?? 'right'] = this.right.bind(this);
-    obj[remap?.setAngle ?? 'setAngle'] = this.setAngle.bind(this);
-    obj[remap?.hide ?? 'hide'] = this.hide.bind(this);
-    obj[remap?.show ?? 'show'] = this.show.bind(this);
-    obj[remap?.putPenUp ?? 'putPenUp'] = this.putPenUp.bind(this);
-    obj[remap?.putPenDown ?? 'putPenDown'] = this.putPenDown.bind(this);
-    obj[remap?.reset ?? 'reset'] = this.reset.bind(this);
-    obj[remap?.clear ?? 'clear'] = this.clear.bind(this);
-    obj[remap?.goto ?? 'goto'] = this.goto.bind(this);
-    obj[remap?.setColor ?? 'setColor'] = this.setColor.bind(this);
-    obj[remap?.setWidth ?? 'setWidth'] = this.setWidth.bind(this);
-    obj[remap?.setShape ?? 'setShape'] = this.setShape.bind(this);
-    obj[remap?.setDelay ?? 'setDelay'] = this.setDelay.bind(this);
-    obj[remap?.setLineCap ?? 'setLineCap'] = this.setLineCap.bind(this);
+    obj[remap?.forward ?? "forward"] = this.forward.bind(this);
+    obj[remap?.left ?? "left"] = this.left.bind(this);
+    obj[remap?.right ?? "right"] = this.right.bind(this);
+    obj[remap?.setAngle ?? "setAngle"] = this.setAngle.bind(this);
+    obj[remap?.hide ?? "hide"] = this.hide.bind(this);
+    obj[remap?.show ?? "show"] = this.show.bind(this);
+    obj[remap?.putPenUp ?? "putPenUp"] = this.putPenUp.bind(this);
+    obj[remap?.putPenDown ?? "putPenDown"] = this.putPenDown.bind(this);
+    obj[remap?.reset ?? "reset"] = this.reset.bind(this);
+    obj[remap?.clear ?? "clear"] = this.clear.bind(this);
+    obj[remap?.goto ?? "goto"] = this.goto.bind(this);
+    obj[remap?.setColor ?? "setColor"] = this.setColor.bind(this);
+    obj[remap?.setWidth ?? "setWidth"] = this.setWidth.bind(this);
+    obj[remap?.setShape ?? "setShape"] = this.setShape.bind(this);
+    obj[remap?.setDelay ?? "setDelay"] = this.setDelay.bind(this);
+    obj[remap?.setLineCap ?? "setLineCap"] = this.setLineCap.bind(this);
     return this;
   }
 
   constructor(context: CanvasRenderingContext2D, options?: TurtleOptions) {
     super();
     this.ctx = context;
-    this.lineCap = 'round';
+    this.lineCap = "round";
 
     if (options?.hidden) this.hidden = options.hidden;
     if (options?.disableWrapping) this.wrap = !options.disableWrapping;
