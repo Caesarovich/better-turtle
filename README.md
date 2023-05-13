@@ -19,7 +19,7 @@ BetterTurtle is an improved version of the many existing ones into TypeScript.
 You can directly include a **minified** (_No IntelliSense_) version of the code into your HTML page.
 
 ```html
-<script src="https://github.com/Caesarovich/better-turtle/releases/download/v1.3.3/main.min.js"></script>
+<script src="https://github.com/Caesarovich/better-turtle/releases/download/v1.4.0/main.min.js"></script>
 ```
 
 ### Option 2 - Install from NPM
