@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Check formatting with Prettier
-        run: npm run format-check
+        run: npm run check-format
   type-check:
     runs-on: ubuntu-latest
     steps:
