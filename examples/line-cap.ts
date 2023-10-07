@@ -16,7 +16,7 @@ const ctx = canvas.getContext('2d');
 ctx.antialias = 'none';
 
 // Instanciate a new Turtle
-const turtle = new Turtle(ctx as CanvasRenderingContext2D, {
+const turtle = new Turtle(ctx as unknown as CanvasRenderingContext2D, {
   width: 20,
 });
 

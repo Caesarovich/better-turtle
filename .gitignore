@@ -3,3 +3,6 @@
 
 # Build directory
 /dist
+
+# Docs site
+/docs

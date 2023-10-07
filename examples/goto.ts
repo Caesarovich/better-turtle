@@ -26,7 +26,7 @@ const ctx = canvas.getContext('2d');
 ctx.antialias = 'none';
 
 // Instanciate a new Turtle
-const turtle = new Turtle(ctx as CanvasRenderingContext2D, {
+const turtle = new Turtle(ctx as unknown as CanvasRenderingContext2D, {
   width: 12,
   lineCap: 'butt',
 });
@@ -35,15 +35,15 @@ turtle.drawGrid(8);
 
 //
 turtle.goto(0, 0);
-encoder.addFrame(ctx);
+encoder.addFrame(ctx as unknown as CanvasRenderingContext2D);
 turtle.goto(0, -150);
-encoder.addFrame(ctx);
+encoder.addFrame(ctx as unknown as CanvasRenderingContext2D);
 turtle.goto(0, 150);
-encoder.addFrame(ctx);
+encoder.addFrame(ctx as unknown as CanvasRenderingContext2D);
 turtle.goto(150, 0);
-encoder.addFrame(ctx);
+encoder.addFrame(ctx as unknown as CanvasRenderingContext2D);
 turtle.goto(-150, 0);
-encoder.addFrame(ctx);
+encoder.addFrame(ctx as unknown as CanvasRenderingContext2D);
 
 // Write data onto PNG file
 encoder.finish();

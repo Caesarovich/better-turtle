@@ -26,7 +26,8 @@ const ctx = canvas.getContext('2d');
 ctx.antialias = 'none';
 
 // Instanciate a new Turtle
-const turtle = new Turtle(ctx as CanvasRenderingContext2D, {
+const turtle = new Turtle(ctx as unknown as CanvasRenderingContext2D, {
+  // Isomorphism at its best
   lineCap: 'butt',
   width: 20,
 });
@@ -35,7 +36,7 @@ const turtle = new Turtle(ctx as CanvasRenderingContext2D, {
 turtle.goto(0, 0);
 for (let i = 0; i < 360; i += 15) {
   turtle.setAngle(i);
-  encoder.addFrame(ctx);
+  encoder.addFrame(ctx as unknown as CanvasRenderingContext2D);
 }
 
 // Write data onto PNG file
