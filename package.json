@@ -11,7 +11,8 @@
     "prepack": "npm run build",
     "rebuild": "npm run clean && npm run build",
     "clean": "rm -rf dist",
-    "docs:build": "typedoc src/index.ts"
+    "docs:build": "typedoc src/index.ts",
+    "docs:build-media": "ts-node examples/index.ts"
   },
   "repository": {
     "type": "git",
