@@ -1,6 +1,6 @@
-import { ColorResolvable } from "./colors";
-import { Vertex2D } from "./shapes";
-import { LineCap } from "./turtle";
+import { ColorResolvable } from './colors';
+import { Vertex2D } from './shapes';
+import { LineCap } from './turtle';
 
 /**
  * The different types of steps the turtle is making.

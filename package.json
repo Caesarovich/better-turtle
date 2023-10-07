@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "npm run build && node dist/test.js",
-    "format": "prettier -w src/*",
-    "check-format": "prettier -c src/*",
+    "format": "prettier -w src/* examples/*",
+    "check-format": "prettier -c src/* examples/*",
     "build": "tsc",
     "prepack": "npm run build",
     "rebuild": "npm run clean && npm run build",

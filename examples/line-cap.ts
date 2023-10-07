@@ -5,9 +5,7 @@ import { join } from 'path';
 
 // Create a stream to save image data
 
-const outStream = createWriteStream(
-  join(__dirname, '../', 'examples', 'line-cap.png')
-);
+const outStream = createWriteStream(join(__dirname, '../', 'examples', 'line-cap.png'));
 
 // Create a 2D canvas
 const canvas = createCanvas(200, 200);

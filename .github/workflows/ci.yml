@@ -1,0 +1,30 @@
+# This is a basic workflow that is manually triggered
+
+name: CI
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  - workflow_dispatch
+  - push
+  - pull_request
+
+jobs:
+  style-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: npm install
+      - name: Check formatting with Prettier
+        run: npm run format-check
+  type-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: npm install
+      - name: Build with Typescript
+        run: npm run build

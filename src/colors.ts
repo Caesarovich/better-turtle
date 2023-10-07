@@ -1,4 +1,4 @@
-import { hex, HTMLColorName } from "./html-colors";
+import { hex, HTMLColorName } from './html-colors';
 
 /**
  * A class for color manipulation.
@@ -51,11 +51,11 @@ export class Color {
    * @param noHashtag Wether to not include the `#` character in the string.
    */
   toHex(noHashtag?: boolean): string {
-    let str = noHashtag ? "" : "#";
+    let str = noHashtag ? '' : '#';
 
-    str += this.r.toString(16).padStart(2, "0");
-    str += this.g.toString(16).padStart(2, "0");
-    str += this.b.toString(16).padStart(2, "0");
+    str += this.r.toString(16).padStart(2, '0');
+    str += this.g.toString(16).padStart(2, '0');
+    str += this.b.toString(16).padStart(2, '0');
 
     return str;
   }
@@ -96,11 +96,7 @@ export function isHTMLColorName(col: string): col is HTMLColorName {
  * - An **array of three integers** representing RGB values
  * - An **hexadecimal string** representation of the RGB value (eg. '#FF15DE')
  */
-export type ColorResolvable =
-  | Color
-  | HTMLColorName
-  | [number, number, number]
-  | string;
+export type ColorResolvable = Color | HTMLColorName | [number, number, number] | string;
 
 export function convertToColor(col: ColorResolvable): Color {
   if (col instanceof Color) return col;
@@ -114,16 +110,16 @@ export function convertToColor(col: ColorResolvable): Color {
   } else {
     col = col.trim().toLowerCase();
     if (hex(col as HTMLColorName)) col = hex(col as HTMLColorName) as string;
-    if (col[0] == "#") col = col.slice(1, 7);
+    if (col[0] == '#') col = col.slice(1, 7);
 
     if (col.length >= 6) {
       rgb[0] = parseInt(col.slice(0, 2), 16);
       rgb[1] = parseInt(col.slice(2, 4), 16);
       rgb[2] = parseInt(col.slice(4, 6), 16);
     } else {
-      rgb[0] = parseInt(col[0] ?? "0", 16);
-      rgb[1] = parseInt(col[1] ?? "0", 16);
-      rgb[2] = parseInt(col[2] ?? "0", 16);
+      rgb[0] = parseInt(col[0] ?? '0', 16);
+      rgb[1] = parseInt(col[1] ?? '0', 16);
+      rgb[2] = parseInt(col[2] ?? '0', 16);
     }
   }
 

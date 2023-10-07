@@ -4,9 +4,7 @@ import { createWriteStream } from 'fs';
 import { join } from 'path';
 
 // Create a stream to save image data
-const outStream = createWriteStream(
-  join(__dirname, '../', 'examples', 'drawing-circle.png')
-);
+const outStream = createWriteStream(join(__dirname, '../', 'examples', 'drawing-circle.png'));
 
 // Create a 2D canvas
 const canvas = createCanvas(400, 400);

@@ -8,9 +8,7 @@ import * as GIFEncoder from 'gifencoder';
 
 const encoder = new GIFEncoder(200, 200);
 
-const outStream = createWriteStream(
-  join(__dirname, '../', 'examples', 'forward.gif')
-);
+const outStream = createWriteStream(join(__dirname, '../', 'examples', 'forward.gif'));
 
 encoder.createReadStream().pipe(outStream);
 
