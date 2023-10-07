@@ -9,10 +9,9 @@
     "check-format": "prettier -c src/* examples/*",
     "build": "tsc",
     "prepack": "npm run build",
-    "rebuild": "npm run clean && npm run build",
     "clean": "rm -rf dist",
-    "docs:build": "typedoc src/index.ts",
-    "docs:build-media": "ts-node examples/index.ts"
+    "build:docs": "typedoc src/index.ts",
+    "prebuild:docs": "ts-node examples/index.ts"
   },
   "repository": {
     "type": "git",
@@ -33,6 +32,7 @@
     "@types/gifencoder": "^2.0.1",
     "@types/node": "^20.1.4",
     "canvas": "^2.10.2",
+    "cz-conventional-changelog": "^3.3.0",
     "gifencoder": "^2.0.1",
     "prettier": "^2.5.1",
     "semantic-release": "^22.0.5",
@@ -48,5 +48,10 @@
       "main"
     ]
   },
-  "types": "dist/index.d.ts"
+  "types": "dist/index.d.ts",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
 }
