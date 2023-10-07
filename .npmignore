@@ -8,6 +8,13 @@
 *.config.*
 /tsconfig.json
 /typedoc.json
+/.prettierrc.json
 
 # Ignore .min files
 *.min.*
+
+# Ignore Workflows
+/.github
+
+# Ignore source
+/src

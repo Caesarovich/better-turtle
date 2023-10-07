@@ -35,12 +35,18 @@
     "canvas": "^2.10.2",
     "gifencoder": "^2.0.1",
     "prettier": "^2.5.1",
+    "semantic-release": "^22.0.5",
     "ts-loader": "^9.2.7",
     "ts-node": "^10.9.1",
     "typedoc": "^0.24.7",
     "typescript": "5.0.4",
     "webpack": "^5.70.0",
     "webpack-cli": "^5.1.1"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ]
   },
   "types": "dist/index.d.ts"
 }
