@@ -159,7 +159,7 @@ export function names(): HTMLColorName[] {
   return Object.keys(htmlColors) as HTMLColorName[];
 }
 
-export function toHex(name: HTMLColorName): string  {
+export function toHex(name: HTMLColorName): string {
   return htmlColors[name];
 }
 
