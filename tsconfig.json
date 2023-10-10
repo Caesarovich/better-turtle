@@ -3,6 +3,7 @@
     "skipLibCheck": true,
     "module": "CommonJS",
     "target": "ES6",
+    "lib": ["ES2020", "DOM"],
     "outDir": "dist",
     "moduleResolution": "Node",
     "sourceMap": true,

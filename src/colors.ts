@@ -1,4 +1,4 @@
-import { hex, HTMLColorName } from './html-colors';
+import { HTMLColorName, toHex } from './html-colors';
 
 /**
  * A class for color manipulation.
@@ -30,17 +30,18 @@ export class Color {
    * Get the RGB value of the color as an array of integers.
    */
 
-  get rgb(): [number, number, number] {
-    return [this.r, this.g, this.b];
+  get rgba(): ColorArray {
+    return [this.r, this.g, this.b, this.a];
   }
 
   /**
    * Set the RGB value of the color as an array of integers.
    */
-  set rgb([r, g, b]) {
+  set rgba([r, g, b, a]) {
     this.r = r;
     this.g = g;
     this.b = b;
+    this.a = a ?? 1;
   }
 
   /**
@@ -80,52 +81,67 @@ export class Color {
     return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`;
   }
 
-  constructor(rgb: [number, number, number]) {
-    this.rgb = rgb;
+  constructor(rgba: ColorArray) {
+    this.rgba = rgba;
   }
 }
 
 export function isHTMLColorName(col: string): col is HTMLColorName {
-  return hex(col as HTMLColorName) != null;
+  return toHex(col as HTMLColorName) != null;
 }
+
+export type ColorArray = [number, number, number, number?];
+
 /**
  * A value that can be resolved into a Color instance.
  *
  * - It can be a **Color** instance itself
  * - An HTML color name as a string (https://www.w3schools.com/colors/colors_names.asp/)
- * - An **array of three integers** representing RGB values
- * - An **hexadecimal string** representation of the RGB value (eg. '#FF15DE')
+ * - An **array of three to four integers** representing RGB(A) values
+ * - An **hexadecimal string** representation of the RGB(A) value (eg. '#FF15DE')
  */
-export type ColorResolvable = Color | HTMLColorName | [number, number, number] | string;
+export type ColorResolvable = Color | HTMLColorName | ColorArray | string;
+
+function clamp(num: number, min: number, max: number): number {
+  return Math.min(Math.max(num, min), max);
+}
+
+// Write a function that converts a hex string to a RGBA array
+
+function parseHex(hex: string): [number, number, number, number] {
+  if (hex[0] == '#') hex = hex.slice(1, 9);
+
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+  const a = parseInt(hex.slice(6, 8), 16);
+
+  return [r, g, b, a];
+}
+
+/**
+ * Convert a value to a **Color** instance.
+ *
+ * @param col The value to convert.
+ */
 
 export function convertToColor(col: ColorResolvable): Color {
   if (col instanceof Color) return col;
-  let rgb: [number, number, number] = [0, 0, 0];
+  let rgb: ColorArray = [0, 0, 0, 1];
 
   if (Array.isArray(col)) {
-    rgb = [...col];
-    rgb[0] ??= 0;
-    rgb[1] ??= 0;
-    rgb[2] ??= 0;
+    rgb = col;
   } else {
     col = col.trim().toLowerCase();
-    if (hex(col as HTMLColorName)) col = hex(col as HTMLColorName) as string;
-    if (col[0] == '#') col = col.slice(1, 7);
-
-    if (col.length >= 6) {
-      rgb[0] = parseInt(col.slice(0, 2), 16);
-      rgb[1] = parseInt(col.slice(2, 4), 16);
-      rgb[2] = parseInt(col.slice(4, 6), 16);
-    } else {
-      rgb[0] = parseInt(col[0] ?? '0', 16);
-      rgb[1] = parseInt(col[1] ?? '0', 16);
-      rgb[2] = parseInt(col[2] ?? '0', 16);
-    }
+    if (isHTMLColorName(col)) col = toHex(col);
+    rgb = parseHex(col);
   }
 
-  rgb[0] = rgb[0] < 0 ? 0 : rgb[0] > 255 ? 255 : rgb[0];
-  rgb[1] = rgb[1] < 0 ? 0 : rgb[1] > 255 ? 255 : rgb[1];
-  rgb[2] = rgb[2] < 0 ? 0 : rgb[2] > 255 ? 255 : rgb[2];
+  // Clamp values or default them
+  rgb[0] = Math.floor(clamp(!isNaN(rgb[0]) ? rgb[0] : 0, 0, 255));
+  rgb[1] = Math.floor(clamp(!isNaN(rgb[1]) ? rgb[1] : 0, 0, 255));
+  rgb[2] = Math.floor(clamp(!isNaN(rgb[2]) ? rgb[2] : 0, 0, 255));
+  rgb[3] = clamp(!isNaN(rgb[3]!) ? rgb[3]! : 1, 0, 1);
 
   return new Color(rgb);
 }

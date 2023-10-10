@@ -151,11 +151,15 @@ const htmlColors = {
 
 export type HTMLColorName = keyof typeof htmlColors;
 
+export function isHTMLColorName(name: string): name is HTMLColorName {
+  return htmlColors[name as HTMLColorName] != null;
+}
+
 export function names(): HTMLColorName[] {
   return Object.keys(htmlColors) as HTMLColorName[];
 }
 
-export function hex(name: HTMLColorName): string | undefined {
+export function toHex(name: HTMLColorName): string  {
   return htmlColors[name];
 }
 
@@ -167,5 +171,5 @@ export function random(): string {
   const keys = Object.keys(htmlColors);
   const rand = Math.floor(Math.random() * keys.length);
   const key = keys[rand];
-  return hex(key as HTMLColorName) ?? '#FFFFFF';
+  return toHex(key as HTMLColorName) ?? '#FFFFFF';
 }
