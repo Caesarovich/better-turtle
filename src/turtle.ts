@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { Color, ColorResolvable, convertToColor } from './colors';
+import { Color, ColorArray, ColorResolvable, convertToColor } from './colors';
 import { Vertex2D, rotateShape, degToRad, BuiltInShapes, resizeShape } from './shapes';
 import { TurtleEvents, StepType, Step } from './steps';
 
@@ -485,18 +485,48 @@ export class Turtle extends EventEmitter {
   /**
    * Sets a new color to be used for drawing.
    *
-   * @param col Any value resolvable to a color.
+   * @param red The red value of the color.
+   * @param green The green value of the color.
+   * @param blue The blue value of the color.
+   * @param alpha The alpha value of the color.
+   *
    * @returns {Turtle} For method chaining.
+   *
+   * @example
+   * ```ts
+   * turtle.setColor(255, 0, 0); // red
+   *
+   * turtle.setColor(0, 255, 0, 0.5); // semi-transparent green
+   * ```
    */
-  setColor(red: number, green: number, blue: number): Turtle;
-  setColor(col: ColorResolvable): Turtle;
-  setColor(...colors: [number, number, number] | [ColorResolvable]): Turtle {
+  setColor(red: number, green: number, blue: number, alpha?: number): Turtle;
+  /**
+   * Sets a new color to be used for drawing.
+   *
+   * @param color Any value resolvable to a color.
+   *
+   * @returns {Turtle} For method chaining.
+   *
+   * @example
+   * ```ts
+   * turtle.setColor('red'); // red
+   *
+   * turtle.setColor([0, 255, 0]); // green
+   *
+   * turtle.setColor('#ffffff'); // white
+   * ```
+   */
+  setColor(color: ColorResolvable): Turtle;
+  setColor(...colors: ColorArray | [ColorResolvable]): Turtle {
     let color: ColorResolvable = [0, 0, 0];
-    if (colors.length === 3) {
-      color = colors;
-    } else {
+    if (colors.length >= 3) {
+      // Check if it was rest arguments
+      color = colors as ColorArray;
+    } else if (typeof colors[0] !== 'number') {
+      // Type guard
       color = colors[0];
     }
+
     if (this.inStep) {
       this.emit('setColor', color);
       this.color = convertToColor(color);
