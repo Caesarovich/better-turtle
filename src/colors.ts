@@ -122,19 +122,18 @@ function parseHex(hex: string): [number, number, number, number] {
 /**
  * Convert a value to a **Color** instance.
  *
- * @param col The value to convert.
+ * @param color The value to convert.
  */
-
-export function convertToColor(col: ColorResolvable): Color {
-  if (col instanceof Color) return col;
+export function convertToColor(color: ColorResolvable): Color {
+  if (color instanceof Color) return color;
   let rgb: ColorArray = [0, 0, 0, 1];
 
-  if (Array.isArray(col)) {
-    rgb = col;
+  if (Array.isArray(color)) {
+    rgb = color;
   } else {
-    col = col.trim().toLowerCase();
-    if (isHTMLColorName(col)) col = toHex(col);
-    rgb = parseHex(col);
+    color = color.trim().toLowerCase();
+    if (isHTMLColorName(color)) color = toHex(color);
+    rgb = parseHex(color);
   }
 
   // Clamp values or default them

@@ -8,6 +8,7 @@
     "format": "prettier -w src/* examples/*",
     "check-format": "prettier -c src/* examples/*",
     "build": "tsc",
+    "pack": "webpack",
     "prepack": "npm run build",
     "clean": "rm -rf dist",
     "build:docs": "typedoc src/index.ts",
