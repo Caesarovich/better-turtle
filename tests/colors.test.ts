@@ -145,9 +145,9 @@ describe('convert hex string', () => {
   test('conversion to rgba', () => {
     expect(convertToColor('#ff000000').toRGBA()).toBe('rgba(255, 0, 0, 0)');
     expect(convertToColor('#008000ff').toRGBA()).toBe('rgba(0, 128, 0, 1)');
-    expect(convertToColor('#0000fff0').toRGBA()).toBe('rgba(0, 0, 255, 1)');
-    expect(convertToColor('#ffff000f').toRGBA()).toBe('rgba(255, 255, 0, 1)');
-    expect(convertToColor('#ffffffaa').toRGBA()).toBe('rgba(255, 255, 255, 1)');
+    expect(convertToColor('#0000ffcc').toRGBA()).toBe('rgba(0, 0, 255, 0.8)');
+    expect(convertToColor('#ffff000f').toRGBA()).toBe('rgba(255, 255, 0, 0.05)');
+    expect(convertToColor('#ffffffaa').toRGBA()).toBe('rgba(255, 255, 255, 0.66)');
     expect(convertToColor('#00000000').toRGBA()).toBe('rgba(0, 0, 0, 0)');
   });
 
