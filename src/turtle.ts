@@ -198,7 +198,7 @@ export class Turtle extends EventEmitter {
   /**
    * The delay in ms between each steps.
    */
-  speed?: number;
+  delay?: number;
 
   /**
    * The timer identifier for the step interval.
@@ -297,6 +297,23 @@ export class Turtle extends EventEmitter {
   }
 
   /**
+   * Resets the interval with the current delay.
+   */
+  private resetInterval() {
+    if (this.interval) clearInterval(this.interval);
+    this.interval = setInterval(this.nextStep.bind(this), this.delay);
+  }
+
+  /**
+   *  Add a step to the queue.
+   */
+  private addStep(step: Step): Turtle {
+    this.steps.push(step);
+    if (!this.interval) this.resetInterval();
+    return this;
+  }
+
+  /**
    * Wipes out the canvas.
    *
    * @returns {Turtle} For method chaining.
@@ -306,7 +323,7 @@ export class Turtle extends EventEmitter {
       this.emit('clear');
       clearContext(this.ctx);
       this.draw();
-    } else this.steps.push({ type: StepType.Clear });
+    } else this.addStep({ type: StepType.Clear });
 
     return this;
   }
@@ -330,7 +347,7 @@ export class Turtle extends EventEmitter {
       this.hidden = true;
       this.restoreImageData();
       this.draw();
-    } else this.steps.push({ type: StepType.Hide });
+    } else this.addStep({ type: StepType.Hide });
     return this;
   }
 
@@ -352,7 +369,7 @@ export class Turtle extends EventEmitter {
       this.emit('show');
       this.hidden = false;
       this.draw();
-    } else this.steps.push({ type: StepType.Show });
+    } else this.addStep({ type: StepType.Show });
     return this;
   }
 
@@ -373,7 +390,7 @@ export class Turtle extends EventEmitter {
       this.setAngle(0);
       this.goto(0, 0);
       this.clear();
-    } else this.steps.push({ type: StepType.Reset });
+    } else this.addStep({ type: StepType.Reset });
     return this;
   }
 
@@ -388,7 +405,7 @@ export class Turtle extends EventEmitter {
       this.emit('setShape', shape);
       this.shape = shape;
       this.draw();
-    } else this.steps.push({ type: StepType.SetShape, args: [shape] });
+    } else this.addStep({ type: StepType.SetShape, args: [shape] });
     return this;
   }
 
@@ -409,12 +426,10 @@ export class Turtle extends EventEmitter {
     if (this.inStep) {
       this.emit('setDelay', ms);
       this.stepByStep = ms > 0;
-      this.speed = ms;
+      this.delay = ms;
 
-      if (this.interval) clearInterval(this.interval);
-
-      this.interval = setInterval(this.nextStep.bind(this), ms);
-    } else this.steps.push({ type: StepType.SetDelay, args: [ms] });
+      this.resetInterval();
+    } else this.addStep({ type: StepType.SetDelay, args: [ms] });
     return this;
   }
 
@@ -441,7 +456,7 @@ export class Turtle extends EventEmitter {
     if (this.inStep) {
       this.emit('putPenUp');
       this.penDown = false;
-    } else this.steps.push({ type: StepType.PenUp });
+    } else this.addStep({ type: StepType.PenUp });
     return this;
   }
 
@@ -468,7 +483,7 @@ export class Turtle extends EventEmitter {
     if (this.inStep) {
       this.emit('putPenDown');
       this.penDown = true;
-    } else this.steps.push({ type: StepType.PenDown });
+    } else this.addStep({ type: StepType.PenDown });
     return this;
   }
 
@@ -532,7 +547,7 @@ export class Turtle extends EventEmitter {
       this.color = convertToColor(color);
       this.restoreImageData();
       this.draw();
-    } else this.steps.push({ type: StepType.SetColor, args: [color] });
+    } else this.addStep({ type: StepType.SetColor, args: [color] });
     return this;
   }
 
@@ -561,7 +576,7 @@ export class Turtle extends EventEmitter {
       this.width = size;
       this.restoreImageData();
       this.draw();
-    } else this.steps.push({ type: StepType.SetWidth, args: [size] });
+    } else this.addStep({ type: StepType.SetWidth, args: [size] });
     return this;
   }
 
@@ -586,7 +601,7 @@ export class Turtle extends EventEmitter {
     if (this.inStep) {
       this.emit('setLineCap', cap);
       this.lineCap = cap;
-    } else this.steps.push({ type: StepType.SetLineCap, args: [cap] });
+    } else this.addStep({ type: StepType.SetLineCap, args: [cap] });
     return this;
   }
 
@@ -609,7 +624,7 @@ export class Turtle extends EventEmitter {
       this.angle = ang;
       this.restoreImageData();
       this.draw();
-    } else this.steps.push({ type: StepType.SetAngle, args: [ang] });
+    } else this.addStep({ type: StepType.SetAngle, args: [ang] });
     return this;
   }
 
@@ -638,7 +653,7 @@ export class Turtle extends EventEmitter {
       this.angle -= ang;
       this.restoreImageData();
       this.draw();
-    } else this.steps.push({ type: StepType.Left, args: [ang] });
+    } else this.addStep({ type: StepType.Left, args: [ang] });
     return this;
   }
 
@@ -667,7 +682,7 @@ export class Turtle extends EventEmitter {
       this.angle += ang;
       this.restoreImageData();
       this.draw();
-    } else this.steps.push({ type: StepType.Right, args: [ang] });
+    } else this.addStep({ type: StepType.Right, args: [ang] });
     return this;
   }
 
@@ -697,7 +712,7 @@ export class Turtle extends EventEmitter {
       this.position.y = y;
       this.restoreImageData();
       this.draw();
-    } else this.steps.push({ type: StepType.Goto, args: [x, y] });
+    } else this.addStep({ type: StepType.Goto, args: [x, y] });
     return this;
   }
 
@@ -778,7 +793,7 @@ export class Turtle extends EventEmitter {
    */
   forward(distance: number): Turtle {
     if (!this.inStep) {
-      this.steps.push({ type: StepType.Forward, args: [distance] });
+      this.addStep({ type: StepType.Forward, args: [distance] });
       return this;
     }
 
